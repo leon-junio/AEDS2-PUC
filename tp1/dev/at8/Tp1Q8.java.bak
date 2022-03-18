@@ -1,0 +1,136 @@
+class Tp1Q8{
+
+	/*
+	 * Função que checa se uma palavra digitada é a condição de parada FIM
+	 * @param txt String para checar se a condição é verdadeira ou falsa
+	 */
+	private static boolean checkFim(String txt){
+		return (txt.length()== 3 && txt.charAt(0) == 'F' && txt.charAt(1) == 'I' && txt.charAt(2) == 'M');	
+	}
+
+
+	/*
+	 * Função que verifica se um char é vogal
+	 * @param txt char que vai ser verificado
+	 * @return retorna o vetor que armazena as contas atualizado
+	 */
+	private static boolean isVogal(int [] vetor, char txt){
+		String vogais = "aeiouáéíóúàèìòùãõâêîôû";
+		for(int j=0;j<vogais.length();j++){
+			if(txt == vogais.charAt(j)){
+				vetor[j]++;
+				j = vogais.length()-1;
+			}
+		}
+		return vetor;
+	}
+
+	/*
+	 * Função que verifica se um char é consoante
+	 * @param txt Char que vai ser verificado
+	 * @return retorno de verdadeiro ou falso satisfazendo a verificação
+	 */
+	private static boolean isCons(char txt){
+		String consoantes = "bcdfghjklmnpqrstvxywz";
+		for(int j=0;j<consoantes.length();j++){
+			if(txt == consoantes.charAt(j)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
+	 * Função responsável por pegar o html de um site passado por parametro
+	 * @param site endereço do site na internet
+	 * @return o html em formato de string da página passada por parametro
+	 */
+	private static String getHtml(String site){
+		URL url;
+		InputStream is = null;
+		BufferedReader br;
+		String resp = "", line;
+		try {
+			url = new URL(site);
+			is = url.openStream();
+			br = new BufferedReader(new InputStreamReader(is));
+			while ((line = br.readLine()) != null) {
+				resp += line + "\n";
+			}
+		} catch (MalformedURLException mue) {
+			mue.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} 
+		try {
+			is.close();
+		} catch (IOException ioe) {
+			System.err.println("Erro interno");
+			ioe.printStackTrace();
+		}
+		return resp;
+	}
+
+	private static int [] inicializarVetor(int [] vetor){
+		for(int i=0;i<vetor.length();i++){
+			vetor[i] = 0;
+		}
+		return vetor;
+	}
+
+	private static void verificar(String html, String nome){
+		int [] respostas = new int [25];
+		vetor = inicializarVetor(respostas);
+		boolean tag = false;
+		String inTag = "";
+		for(int i=0;i<html.length();i++){
+			if(html.charAt(i)=='<'){
+				tag = true;
+			}
+			if(html.charAt(i)=='>'){
+				tag = false;
+				if(inTag.length() == 2){
+					if(inTag.charAt(0) == 'b' && inTag.charAt(1) == 'r'){
+						respostas[23]++;
+					}
+				}else if(inTag.length() == 5){
+					if(inTag.charAt(0) == 't' && inTag.charAt(1) == 'a' && inTag.charAt(2) == 'b'
+							&& inTag.charAt(3) == 'l' && inTag.charAt(4) == 'e'){
+						respostas[24]++;
+							}
+				}
+				inTag = "";
+			}
+			if(tag){
+				inTag += html.charAt(i);
+			}else{
+				if(isCons(html.charAt(i))){
+					respostas[22]++;
+				}else{
+					respostas = isVogal(respostas,html.charAt(i));
+				}
+			}
+		}
+		printResps(respostas,nome);
+	}
+
+	private static void printResps(int [] resps, String nome){
+		MyIO.println("a("+respostas[0]+") e("+respostas[1]+") i("+respostas[2]+") o("+respostas[3]+") u("+respostas[4]+") á("+respostas[5]+") é("+respostas[6]+") í("+respostas[7]+
+				") ó("+respostas[8]+") ú("+respostas[9]+") à("+respostas[10]+") è("+respostas[11]+") ì("+respostas[12]+") ò("+respostas[13]+") ù("+respostas[14]+") ã("+respostas[15]+
+				") õ("+respostas[16]+") â("+respostas[17]+") ê("+respostas[18]+") î("+respostas[19]+") ô("+respostas[20]+") û("+respostas[21]+") consoante("+respostas[22]+
+				") <br>("+respostas[23]+") <table>("+respostas[24]+") "+nome);
+	}
+
+	public static void main(String [] args){
+		String site = "", nome = "", html = "";
+		do{
+			nome = MyIO.readLine();
+			if(!checkFim(nome)){
+				site = MyIO.readLine();
+				html = getHtml(site);
+				verificar(html,nome);
+			}
+		}while(!checkFim(nome));
+	}
+
+}
