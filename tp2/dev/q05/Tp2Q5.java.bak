@@ -707,6 +707,7 @@ class Filme {
 			case 9:
 				resp = Ferramentas.myReplace(linha, "<meta property=\"og:title\" content=\"", "");
 				resp = Ferramentas.myReplace(resp, "\">", "");
+				resp = Ferramentas.myReplace(resp, "&amp;", "");
 				break;
 			default:
 				break;
