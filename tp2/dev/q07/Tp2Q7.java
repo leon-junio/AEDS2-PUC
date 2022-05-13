@@ -718,8 +718,8 @@ class Filme {
 	// extração de dados
 	private File getFile(String name) throws IOException {
 		File file;
-		file = new File("../tmp/filmes/" + name);
-		// file = new File("/tmp/filmes/" + name);
+		//file = new File("../tmp/filmes/" + name);
+		file = new File("/tmp/filmes/" + name);
 		if (!file.isFile()) {
 			throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
 		} else {
@@ -753,7 +753,7 @@ class FilaCircular {
 		}
 		filmes[ultimo] = fm;
 		ultimo = (ultimo + 1) % filmes.length;
-		MyIO.println(calcMedia());
+		MyIO.println(Math.round(calcMedia()));
 	}
 
 	// remover valores da fila circular
@@ -776,8 +776,9 @@ class FilaCircular {
 		MyIO.println();
 	}
 
-	public int calcMedia() {
-		int resp = 0, count = 0;
+	public float calcMedia() {
+		float resp = 0;
+		int count = 0;
 		for (int j = primeiro; j != ultimo; j = (j + 1) % filmes.length) {
 			resp += filmes[j].getDuracao();
 			count++;

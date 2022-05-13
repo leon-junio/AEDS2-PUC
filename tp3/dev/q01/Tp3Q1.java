@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 //horas e demais funções
 class Ferramentas {
 
-	// MATRICULA DE ALUNO DEFINIDA PARA USO INTERNO NO SISTEMA
+	// MATRICULA COMO ALUNO DEFINIDA PARA USO INTERNO NO SISTEMA
 	private final static String matricula = "1369371";
 
 	public static String getMatricula() {
@@ -165,13 +165,14 @@ class Ferramentas {
 		return resp;
 	}
 
-	// Função que gera um arquivo de log contendo o total de comparações
-	// tempo de execução e a matricula do aluno definida na classe
-	public static boolean gerarLog(double inic, double fim, int comp) {
+	// Função responsavel por gerar o log contendo as informações de execução do
+	// código
+	// Tais como o tempo, comparações e minha matricula
+	public static boolean gerarLog(double inic, double fim, int comp, int mov, String txt) {
 		boolean resp = true;
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_binario.txt"));
-			bw.write(getMatricula() + "\t" + (fim - inic) / 1000.0 + "\t" + comp);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_" + txt + ".txt"));
+			bw.write(getMatricula() + "\t" + comp + "\t" + mov + "\t" + (fim - inic) / 1000.0);
 			bw.close();
 		} catch (IOException io) {
 			io.printStackTrace();
@@ -655,7 +656,7 @@ class Filme {
 		switch (op) {
 			case 1:
 				String locale = Ferramentas.mySubstring(linha, Ferramentas.myIndexOf(linha, '('),
-						Ferramentas.myIndexOf(linha, ')') + 1);// remoção do (BR) (US) etc
+						Ferramentas.myIndexOf(linha, ')') + 1); // remoção do (BR) (US) etc
 				linha = Ferramentas.myReplace(linha, " " + locale, " ");
 				resp = Ferramentas.myTrim(linha);
 				break;
@@ -664,21 +665,15 @@ class Filme {
 				resp = Ferramentas.myReplace(resp, ",,&nbsp;", "");
 				break;
 			case 3:
-				if (Ferramentas.myContains(linha, "m")) {
-					linha = Ferramentas.myReplace(linha, 'm', ' ');
-					if (Ferramentas.myContains(linha, "h")) {
-						linha = Ferramentas.myReplace(linha, 'h', ' ');
-					} else {
-						resp = " " + linha;
-						linha = resp;
-						resp = "";
-					}
-					resp = "" + Ferramentas.getMinutos(linha);
-				} else {
+				linha = Ferramentas.myReplace(linha, 'm', ' ');
+				if (Ferramentas.myContains(linha, "h")) {
 					linha = Ferramentas.myReplace(linha, 'h', ' ');
-					linha  = Ferramentas.myTrim(linha);
-					resp = "" + (Integer.parseInt(linha) * 60);
+				} else {
+					resp = " " + linha;
+					linha = resp;
+					resp = "";
 				}
+				resp = "" + Ferramentas.getMinutos(linha);
 				break;
 			case 4:
 				resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>Título original</strong> ", "");
@@ -707,6 +702,7 @@ class Filme {
 			case 9:
 				resp = Ferramentas.myReplace(linha, "<meta property=\"og:title\" content=\"", "");
 				resp = Ferramentas.myReplace(resp, "\">", "");
+				resp = Ferramentas.myReplace(resp, "&amp;", "");
 				break;
 			default:
 				break;
@@ -718,8 +714,8 @@ class Filme {
 	// extração de dados
 	private File getFile(String name) throws IOException {
 		File file;
-		//file = new File("tmp/filmes/" + name);
-		file = new File("/tmp/filmes/" + name);
+		// file = new File("tmp/filmes/" + name);
+		file = new File("../tmp/filmes/" + name);
 		if (!file.isFile()) {
 			throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
 		} else {
@@ -744,88 +740,15 @@ class Lista {
 	private Filme[] filmes;
 	private int count = 0;
 
-	/**
-	 * Insere um elemento na primeira posicao da lista e move os demais
-	 * elementos para o fim da lista.
-	 * 
-	 * @param fm Filme elemento a ser inserido.
-	 */
-	public void inserirInicio(Filme fm) {
-		for (int i = count; i > 0; i--) {
-			filmes[i] = filmes[i - 1];
-		}
-		filmes[0] = fm;
-		count++;
-	}
-
-	/**
-	 * Insere um elemento em uma posicao especifica e move os demais
-	 * elementos para o fim da lista.
-	 * 
-	 * @param fm  Filme elemento a ser inserido.
-	 * @param pos Posicao de insercao.
-	 */
-	public void inserir(Filme fm, int pos) {
-		for (int i = count; i > pos; i--) {
-			filmes[i] = filmes[i - 1];
-		}
-		filmes[pos] = fm;
-		count++;
-	}
-
-	/**
-	 * Remove um elemento da primeira posicao da lista e movimenta
-	 * os demais elementos para o inicio da mesma.
-	 * 
-	 * @return resp int elemento a ser removido.
-	 */
-	public Filme removerInicio() {
-		Filme resp = filmes[0].clonar();
-		count--;
-		for (int i = 0; i < count; i++) {
-			filmes[i] = filmes[i + 1];
-		}
-		return resp;
-	}
-
-	/**
-	 * Remove um elemento da ultima posicao da lista.
-	 * 
-	 * @return resp int elemento a ser removido.
-	 */
-	public Filme removerFim() {
-		return filmes[--count].clonar();
-	}
-
-	/**
-	 * Remove um elemento de uma posicao especifica da lista e
-	 * movimenta os demais elementos para o inicio da mesma.
-	 * 
-	 * @param pos Posicao de remocao.
-	 * @return resp int elemento a ser removido.
-	 */
-	public Filme remover(int pos) {
-		Filme resp = filmes[pos].clonar();
-		count--;
-		for (int i = pos; i < count; i++) {
-			filmes[i] = filmes[i + 1];
-		}
-		return resp;
-	}
-
-	// Inserir dentro da lista de filmes na última posição
-	public void inserirFim(Filme obj) {
+	public void inserir(Filme obj) {
 		filmes[count] = obj;
 		count++;
 	}
 
-	// Imprimir informações de todos os filmes cadastrados
 	public void imprimir() {
-		for (int j = 0;j<count;j++) {
-			MyIO.print("[" + j + "] ");
-			filmes[j].imprimir();
+		for (Filme filmeObj : filmes) {
+			filmeObj.imprimir();
 		}
-		MyIO.println();
 	}
 
 	/**
@@ -834,10 +757,24 @@ class Lista {
 	 * @return timestamp atual
 	 */
 	public long now() {
-		return System.currentTimeMillis();
+		return new Date().getTime();
 	}
 
-	private int comp;
+	public void swap(int i, int j) {
+		Filme temp = filmes[i];
+		filmes[i] = filmes[j];
+		filmes[j] = temp;
+	}
+
+	private int comp, mov;
+
+	public int getMovimentacoes() {
+		return mov;
+	}
+
+	public void setMov(int mov) {
+		this.mov = mov;
+	}
 
 	public void setComp(int comp) {
 		this.comp = comp;
@@ -847,34 +784,51 @@ class Lista {
 		return this.comp;
 	}
 
-	// Pesquisa binária entre Strings desenvolvida para funcionar junto de uma
-	// checagem de ordem alfabetica entre duas strings para realizar uma busca
-	// mais rápida e com mais precisão --> CheckAlfa retorna se uma string é maior
-	// que outra
-	public boolean findBinario(String nome) {
+	/*
+	 * Pesquisa sequencial dentro da lista de filmes percorrendo o vetor até
+	 * encontrar a String desejada
+	 * Caso encontre ele para a execução do for para ganhar mais performance e no
+	 * pior caso vai realizar
+	 * todas as n comparações até encontrar o resultado
+	 */
+	public boolean findSequencial(String nome) {
 		boolean resp = false;
-		int dir = (filmes.length - 1), esq = 0, meio, comp = 0;
-		while (esq <= dir) {
-			meio = (esq + dir) / 2;
+		int comp = 0;
+		for (int i = 0; i < filmes.length; i++) {
 			comp++;
-			if (nome.equals(filmes[meio].getNome())) {
+			if (filmes[i].getNome().equals(nome)) {
 				resp = true;
-				esq = dir + 1;
-			} else if (Ferramentas.isStrMaior(nome, filmes[meio].getNome())) { // checando a ordem de Strings
-				comp++;
-				esq = meio + 1;
-			} else {
-				comp++;
-				dir = meio - 1;
+				i = filmes.length;
 			}
 		}
 		setComp(comp);
 		return resp;
 	}
 
+	/**
+	 * codigo de ordenação por seleção em Java com Filmes
+	 */
+	public void sort() {
+		int comp = 0, mov = 0;
+		for (int i = 0; i < (count - 1); i++) {
+			int menor = i;
+			mov ++;
+			for (int j = (i + 1); j < count; j++) {
+				if (Ferramentas.isStrMaior(filmes[menor].getTitulo(), filmes[j].getTitulo())) {
+					menor = j;
+					mov++;
+				}
+			}
+			swap(menor, i);
+			mov += 3;
+		}
+		setComp(comp);
+		setMov(mov);
+	}
+
 }
 
-public class Tp2Q5 {
+public class Tp3Q1 {
 
 	private static boolean isFim(String entrada) {
 		return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
@@ -882,11 +836,12 @@ public class Tp2Q5 {
 
 	public static void main(String[] args) {
 		ArrayList<String> entradas = new ArrayList<>();
-		ArrayList<String> removes = new ArrayList<>();
-		String verificacoes[];
+		ArrayList<String> verificacoes = new ArrayList<>();
+		ArrayList<Boolean> results = new ArrayList<>();
 		Lista listaFilmes;
-		int n = 0, pos = 0, count = 0;
-		String entrada = "", comando, aux = "";
+		double fim, inic;
+		int comp = 0, mov = 0;
+		String entrada = "";
 		MyIO.setCharset("UTF-8");
 		do {
 			entrada = MyIO.readLine();
@@ -894,56 +849,26 @@ public class Tp2Q5 {
 				entradas.add(entrada);
 			}
 		} while (!isFim(entrada));
-		n = MyIO.readInt();
-		verificacoes = new String[n];
-		// salvando comandos de verificação para serem executados
-		for (int i = 0; i < n; i++) {
-			verificacoes[i] = entrada = MyIO.readLine();
-			if (Ferramentas.myContains(verificacoes[i].substring(0, 1), "I")) {
-				count++;
-			}
-		}
-
 		// criação dos objetos de filme/leitura/impressao
-		listaFilmes = new Lista(entradas.size() + count);
+		listaFilmes = new Lista(entradas.size());
 		for (String ent : entradas) {
 			Filme filme = new Filme(ent);
-			listaFilmes.inserirFim(filme);
+			listaFilmes.inserir(filme);
 		}
 
-		// executando comandos da lista de acordo com a demanda
-		for (int i = 0; i < n; i++) {
-			comando = verificacoes[i];
-			//System.out.println(comando);
-			if (Ferramentas.myContains(comando, "II")) {
-				listaFilmes.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-			} else if (Ferramentas.myContains(comando, "IF")) {
-				listaFilmes.inserirFim(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-			} else if (Ferramentas.myContains(comando, "I*")) {
-				aux = Ferramentas.lerEntreSpaces(comando);
-				pos = Integer.parseInt(aux);
-				listaFilmes.inserir(new Filme(Ferramentas.mySubstring(comando, aux.length() + 4, comando.length())),
-						pos);
-			} else if (Ferramentas.myContains(comando, "RI")) {
-				removes.add(listaFilmes.removerInicio().getNome());
-			} else if (Ferramentas.myContains(comando, "RF")) {
-				removes.add(listaFilmes.removerFim().getNome());
-			} else if (Ferramentas.myContains(comando, "R*")) {
-				pos = Integer.parseInt(Ferramentas.lerEntreSpaces(comando));
-				removes.add(listaFilmes.remover(pos).getNome());
-			}
-			/*
-			System.out.println("----------------------------------------------------------------------");
-			System.out.println("COMANDO: "+comando);
-			listaFilmes.imprimir();
-			System.out.println("----------------------------------------------------------------------");
-			*/
+		// procurando sequencialmente
+		inic = listaFilmes.now();
+		for (String ver : verificacoes) {
+			results.add(listaFilmes.findSequencial(ver));
+			comp += listaFilmes.getComparacoes();
+			mov += listaFilmes.getMovimentacoes();
 		}
-		// Printando resultados das inserções e remoções
-		for (String name : removes) {
-			MyIO.println("(R) " + name);
-		}
+		fim = listaFilmes.now();
+		Ferramentas.gerarLog(inic, fim, comp, mov, "selecao");
+
+		// imprimindo resultados da ordernação
 		listaFilmes.imprimir();
+
 	}
 
 }

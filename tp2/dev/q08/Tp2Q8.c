@@ -1,949 +1,955 @@
-import java.util.Date;
-import java.util.ArrayList;
-import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <dirent.h>
+// BIBLIOTECAS USADAS PARA REALIZAÇÃO DESSA ATIVIDADE
 
-//Classe de ferramentas desenvolvida por Leon Júnio
-//Essa classe substitui todos os métodos principais da
-//biblioteca String e ainda possuí alguns conversores de data
-//horas e demais funções
-class Ferramentas {
+// CONSTANTE DE TAMANHO MÁXIMO DE STRING E ARRAYS DE CHAR
+#define STRMAX 1200
 
-	// MATRICULA DE ALUNO DEFINIDA PARA USO INTERNO NO SISTEMA
-	private final static String matricula = "1369371";
+// STRUCTS
+typedef struct
+{
+	int dia, mes, ano;
+} Date;
 
-	public static String getMatricula() {
-		return matricula;
-	}
+typedef struct
+{
+	char nome[500], titulo[500], genero[2500], idioma[100], situacao[50];
+	float orcamento;
+	int duracao;
+	Date lancamento;
+	char *keywords[1000];
+	int numkey;
+} Filme;
 
-	// Função que checa se uma String é antes ou depois de outra String
-	// Gerando assim uma verificação de ordem alfabética
-	// frase --> String que vai ser comparada com outra
-	// ver --> String que vai ser usada como comparação
-	public static boolean isStrMaior(String frase, String ver) {
-		boolean resp = false;
-		for (int i = 0; i < ver.length(); i++) {
-			if (frase.charAt(i) < ver.charAt(i)) {
-				resp = false;
-				i = ver.length();
-			} else if (frase.charAt(i) > ver.charAt(i)) {
-				resp = true;
-				i = ver.length();
-			} else if (i == ver.length()) {
-				if (ver.length() == frase.length()) {
+// Metodo de comparação de duas char*s e retorna sua igualdade em forma de
+// bool
+bool myEquals(char str1[STRMAX], char str2[STRMAX])
+{
+	bool resp = false;
+	if (str1 != NULL && str2 != NULL)
+	{
+		if (strlen(str1) == strlen(str2))
+		{
+			resp = true;
+			for (int i = 0; i < strlen(str1); i++)
+			{
+				if (str1[i] != str2[i])
+				{
 					resp = false;
-				} else {
-					resp = true;
 				}
 			}
 		}
-		return resp;
 	}
-
-	// Função para ler entre espaços dentro de uma frase
-	// No maximo dois espaços
-	public static String lerEntreSpaces(String frase) {
-		String resp = "";
-		boolean check = false;
-		for (int i = 0; i < frase.length(); i++) {
-			if (frase.charAt(i) == ' ') {
-				if (check) {
-					i = frase.length();
-				} else {
-					check = true;
-				}
-			} else if (check) {
-				resp += frase.charAt(i);
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que simula a String.replace() e a String.trim()
-	 * 
-	 * @param frase  Frase para ser formatada
-	 * @param antiga Char para ser alterado
-	 * @param nova   Novo char para ser adicionado
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
-	public static String myReplace(String frase, char antiga, char nova) {
-		String resp = "";
-		if (frase != null) {
-			for (int i = 0; i < frase.length(); i++) {
-				if (frase.charAt(i) == antiga) {
-					resp += nova;
-				} else {
-					// trim para remover espaços
-					if (frase.charAt(i) != ' ') {
-						resp += frase.charAt(i);
-					}
-				}
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que simula o indexOf da classe String
-	 * 
-	 * @param frase  para procurar o char
-	 * @param antiga Char para ser localizado
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
-	public static int myIndexOf(String frase, char letra) {
-		int resp = -1;
-		if (frase != null) {
-			for (int i = 0; i < frase.length(); i++) {
-				if (frase.charAt(i) == letra) {
-					resp = i;
-					i = frase.length();
-				}
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que simula o trim da classe String
-	 * 
-	 * @param frase para remover os espaços e realizar formatação
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
-	public static String myTrim(String frase) {
-		String resp = "";
-		if (frase != null) {
-			for (int i = 0; i < frase.length(); i++) {
-				if (frase.charAt(i) != ' ') {
-					resp += frase.charAt(i);
-				}
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que simula o Substring da classe String
-	 * 
-	 * @param frase para procurar a String interna
-	 * @param inic  index inicial
-	 * @param fim   index final
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
-	public static String mySubstring(String frase, int inic, int fim) {
-		String resp = "";
-		if (frase != null) {
-			if (fim - inic <= frase.length()) {
-				for (int i = inic; i < fim; i++) {
-					resp += frase.charAt(i);
-				}
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que simula o Substring da classe String
-	 * 
-	 * @param frase para procurar a String interna
-	 * @param cInic char para localizar o index inicial
-	 * @param cFim  char para localizar o index final
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
-	public static String mySubstring(String frase, char cInic, char cFim) {
-		String resp = "";
-		if (frase != null) {
-			int inic = Ferramentas.myIndexOf(frase, cInic);
-			int fim = Ferramentas.myIndexOf(frase, cFim);
-			if (fim - inic <= frase.length()) {
-				for (int i = inic; i < fim + 1; i++) {
-					resp += frase.charAt(i);
-				}
-			}
-		}
-		return resp;
-	}
-
-	// Função que gera um arquivo de log contendo o total de comparações
-	// tempo de execução e a matricula do aluno definida na classe
-	public static boolean gerarLog(double inic, double fim, int comp) {
-		boolean resp = true;
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_binario.txt"));
-			bw.write(getMatricula() + "\t" + (fim - inic) / 1000.0 + "\t" + comp);
-			bw.close();
-		} catch (IOException io) {
-			io.printStackTrace();
-			resp = false;
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que simula a String.contains() para strings
-	 * 
-	 * @param frase Frase para ser verificada
-	 * @param ver   verificação que vai ser usada
-	 * @return Verdade ou falso de acordo com a verificação
-	 */
-	public static boolean myContains(String frase, String ver) {
-		boolean resp = false;
-		String aux = "";
-		int count = 0;
-		if (frase != null) {
-			for (int i = 0; i < frase.length(); i++) {
-				if (frase.charAt(i) == ver.charAt(0)) {
-					if ((frase.length() - i) >= ver.length()) {
-						for (int j = i; j < frase.length(); j++) {
-							aux += frase.charAt(j);
-							count++;
-							if (count == ver.length()) {
-								j = frase.length();
-								count = 0;
-							}
-						}
-						if (myEquals(aux, ver)) {
-							resp = true;
-							i = frase.length();
-						} else {
-							aux = "";
-							count = 0;
-						}
-					} else {
-						aux = "";
-					}
-				}
-			}
-		}
-		return resp;
-	}
-
-	// Metodo de comparação de duas Strings e retorna sua igualdade em forma de
-	// boolean
-	public static boolean myEquals(String str1, String str2) {
-		boolean resp = false;
-		if (str1 != null && str2 != null) {
-			if (str1.length() == str2.length()) {
-				resp = true;
-				for (int i = 0; i < str1.length(); i++) {
-					if (str1.charAt(i) != str2.charAt(i)) {
-						resp = false;
-					}
-				}
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que simula a String.replace() para strings
-	 * 
-	 * @param frase  Frase para ser formatada
-	 * @param antiga String para ser alterado
-	 * @param nova   String para ser adicionado
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
-	public static String myReplace(String str, String str_old, String str_new) {
-		String resp = "", auxresp = "";
-		boolean eql = false;
-		int j = 0;
-		if (str != null && str_new != null && str_old != null) {
-			for (int i = 0; i < str.length(); i++) {
-				if (str.charAt(i) == str_old.charAt(j)) {
-					eql = true;
-					j++;
-					auxresp += str.charAt(i);
-				} else {
-					if (eql) {
-						j = 0;
-						if (str.charAt(i) == str_old.charAt(j)) {
-							resp += auxresp;
-							auxresp = "";
-							eql = true;
-							j++;
-							auxresp += str.charAt(i);
-						} else {
-							eql = false;
-							resp += auxresp += str.charAt(i);
-							auxresp = "";
-						}
-					} else {
-						resp += str.charAt(i);
-					}
-				}
-				if (eql) {
-					if (j == str_old.length()) {
-						resp += str_new;
-						auxresp = "";
-						j = 0;
-						eql = false;
-					}
-				}
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que remove espaços do inicio de frases
-	 * 
-	 * @param frase Frase para ser formatada
-	 * @param end   char de condição final
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
-	public static String inicioTrim(String line, char end) {
-		String resp = "";
-		boolean next = false;
-		if (line != null) {
-			for (int i = 0; i < line.length(); i++) {
-				if (line.charAt(i) == end) {
-					next = true;
-				}
-				if (next)
-					resp += line.charAt(i);
-			}
-		}
-		if (resp.length() == 0)
-			return line;
-		else
-			return resp;
-	}
-
-	/**
-	 * Função que remove tags e puxa tudo que esta entre elas
-	 * 
-	 * @param frase Frase para ser formatada sem as tags
-	 * @return Frase de expressao formatada e pronta para uso com TUDO que está fora
-	 *         das tags
-	 */
-	public static String removeTags(String line) {
-		String resp = "";
-		boolean next = false;
-		if (line != null) {
-			for (int i = 0; i < line.length(); i++) {
-				if (line.charAt(i) == '>')
-					next = true;
-				else if (line.charAt(i) == '<')
-					next = false;
-				else if (next)
-					resp += line.charAt(i);
-			}
-		}
-		return resp;
-	}
-
-	/**
-	 * Função que remove tags e puxa tudo que esta entre elas e adiciona separadores
-	 * para palavras
-	 * 
-	 * @param frase Frase para ser formatada sem as tags
-	 * @param frase Separador para distribuir frases e etc
-	 * @return Frase de expressao formatada e pronta para uso com TUDO que está fora
-	 *         das tags
-	 */
-	public static String removeTags(String line, char separador) {
-		String resp = "";
-		int count = 0;
-		boolean next = false;
-		if (line != null) {
-			for (int i = 0; i < line.length(); i++) {
-				if (line.charAt(i) == '>')
-					next = true;
-				else if (line.charAt(i) == '<') {
-					next = false;
-					if (count != 0)
-						resp += separador;
-					count = 0;
-				} else if (next) {
-					count++;
-					resp += line.charAt(i);
-				}
-			}
-		}
-		return resp;
-	}
-
-	// Essa função retorna uma data em String convertida para o objeto de Date do
-	// Java
-	public static Date getData(String data) {
-		Date date = null;
-		if (data != null) {
-			try {
-				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-				date = format.parse(data);
-			} catch (ParseException pe) {
-				MyIO.println(pe.getMessage());
-				return null;
-			}
-		}
-		return date;
-	}
-
-	// funcao que remove letras e gera um horario em formato de minutos pronto para
-	// uso
-	// realizando o calculo automatico das horas se possível (Horas * 60 = horas em
-	// minutos)
-	public static int getMinutos(String linha) {
-		String hr = "", mn = "";
-		int conta = 0;
-		boolean chk = false;
-		if (linha != null) {
-			for (int i = 0; i < linha.length(); i++) {
-				if (chk) {
-					if (linha.charAt(i) != ' ') {
-						mn += linha.charAt(i);
-					}
-				} else {
-					if (linha.charAt(i) != ' ') {
-						hr += linha.charAt(i);
-					} else {
-						chk = true;
-					}
-				}
-			}
-			conta = Integer.parseInt(mn);
-			if (hr.length() > 0) {
-				conta += Integer.parseInt(hr) * 60;
-			}
-		}
-		return conta;
-	}
-
-	// Metodo responsavel por formatar uma nova entrada de data
-	public static String formatDate(Date dt) {
-		String resp = "";
-		try {
-			SimpleDateFormat sfd = new SimpleDateFormat("dd/MM/yyyy");
-			resp = sfd.format(dt);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return resp;
-	}
-
+	return resp;
 }
 
-class Filme {
-	private String nome, titulo, genero, idioma, situacao;
-	private float orcamento;
-	private int duracao;
-	private Date lancamento;
-	private ArrayList<String> listChaves = new ArrayList<>();
-
-	public int getDuracao() {
-		return duracao;
-	}
-
-	public String getIdioma() {
-		return idioma;
-	}
-
-	public String getGenero() {
-		return genero;
-	}
-
-	public Date getLancamento() {
-		return lancamento;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public float getOrcamento() {
-		return orcamento;
-	}
-
-	public String getSituacao() {
-		return situacao;
-	}
-
-	public String getTitulo() {
-		return titulo;
-	}
-
-	public void setDuracao(int duracao) {
-		this.duracao = duracao;
-	}
-
-	public void setGenero(String genero) {
-		this.genero = genero;
-	}
-
-	public void setIdioma(String idioma) {
-		this.idioma = idioma;
-	}
-
-	public void setLancamento(Date lancamento) {
-		this.lancamento = lancamento;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public void setOrcamento(float orcamento) {
-		this.orcamento = orcamento;
-	}
-
-	public void setSituacao(String situacao) {
-		this.situacao = situacao;
-	}
-
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
-	}
-
-	public ArrayList<String> getListChaves() {
-		return listChaves;
-	}
-
-	public void setListChaves(ArrayList<String> listChaves) {
-		this.listChaves.addAll(listChaves);
-	}
-
-	public void addChave(String palavra) {
-		listChaves.add(palavra);
-	}
-
-	public String getChave(int index) {
-		return listChaves.get(index);
-	}
-
-	public Filme(String entrada) {
-		ler(entrada);
-	}
-
-	public Filme() {
-	}
-
-	// Função de clonagem de objeto para evitar erros de acesso de memoria e perda
-	// de dados
-	public Filme clonar() {
-		Filme dolly = new Filme();
-		dolly.setDuracao(getDuracao());
-		dolly.setGenero(getGenero());
-		dolly.setIdioma(getIdioma());
-		dolly.setLancamento(getLancamento());
-		dolly.setNome(getNome());
-		dolly.setSituacao(getSituacao());
-		dolly.setOrcamento(getOrcamento());
-		dolly.setTitulo(getTitulo());
-		dolly.setListChaves(getListChaves());
-		return dolly;
-	}
-
-	// Método que vai iniciar o objeto de Filme e realizar a pesquisa entre as
-	// linhas
-	// do arquivo atrás dos dados necessários para a extração. Esse método realiza
-	// vários
-	// whiles seguidos procurando por informações especificas dentro das linhas
-	private void ler(String entrada) {
-		try {
-			String line = "";
-			BufferedReader buff = new BufferedReader(new FileReader(getFile(entrada)));// Arquivo HTML
-			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "og:title")) {
-				line = buff.readLine();
+/*
+Função de replace entre String e chars, passamos uma string alvo para realizar as trocas
+um char que deve ser localizado e é o que vai ser alterado dentro da String alvo e um char
+que vai ser a opção de mudança
+Simula o funcionamento da String.replace() do Java
+*/
+char *myReplaceCh(char frase[STRMAX], char antiga, char nova)
+{
+	char *resp;
+	resp = malloc(sizeof(char) * strlen(frase));
+	int pos = 0;
+	if (frase != NULL)
+	{
+		for (int i = 0; i < strlen(frase); i++)
+		{
+			if (frase[i] == antiga)
+			{
+				resp[pos] = nova;
+				pos++;
 			}
-			setNome(tratarLinha(line, 9));
-			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "class=\"release\"")) {
-				line = buff.readLine();
-			}
-			line = buff.readLine();
-			setLancamento(Ferramentas.getData(tratarLinha(line, 1)));
-			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "class=\"genres\"")) {
-				line = buff.readLine();
-			}
-			buff.readLine();
-			line = buff.readLine();
-			setGenero(tratarLinha(line, 2));
-			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "class=\"runtime\"")) {
-				line = buff.readLine();
-			}
-			buff.readLine();
-			line = buff.readLine();
-			setDuracao(Integer.parseInt(tratarLinha(line, 3)));
-			line = buff.readLine();
-			boolean chk = false;
-			while (!Ferramentas.myContains(line, "Título original")) {
-				line = buff.readLine();
-				if (Ferramentas.myContains(line, "<bdi>Situação</bdi>")) {
-					setTitulo(getNome());
-					chk = true;
-					break;
+			else
+			{
+				// trim para remover espaços
+				if (frase[i] != ' ')
+				{
+					resp[pos] = frase[i];
+					pos++;
 				}
 			}
-			if (chk == false) {
-				setTitulo(tratarLinha(line, 4));
-				line = buff.readLine();
-			}
-			while (!Ferramentas.myContains(line, "Situação")) {
-				line = buff.readLine();
-			}
-			setSituacao(tratarLinha(line, 5));
-			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "Idioma original")) {
-				line = buff.readLine();
-			}
-			setIdioma(tratarLinha(line, 6));
-			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "Orçamento")) {
-				line = buff.readLine();
-			}
-			setOrcamento(Float.parseFloat(tratarLinha(line, 7)));
-			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "Palavras-chave")) {
-				line = buff.readLine();
-			}
-			line = buff.readLine();
-			line = buff.readLine();
-			if (Ferramentas.myContains(line, "Nenhuma palavra-chave foi adicionada")) {
-				line = "</ul>";
-			}
-			while (!Ferramentas.myContains(line, "</ul>")) {
-				if (Ferramentas.myContains(line, "<li>")) {
-					addChave(tratarLinha(line, 8));
-				}
-				line = buff.readLine();
-			}
-			buff.close();
-		} catch (IOException io) {
-			System.err.println(io.getMessage());
-			io.printStackTrace();
-		} catch (Exception e) {
-			System.err.println("Erro desconhecido dentro da função de leitura: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-	}
-
-	// Método para imprimir as informações do objeto
-	public void imprimir() {
-		MyIO.print(getNome() + " ");
-		MyIO.print(getTitulo() + " ");
-		MyIO.print(Ferramentas.formatDate(getLancamento()) + " ");
-		MyIO.print(getDuracao() + " ");
-		MyIO.print(getGenero() + " ");
-		MyIO.print(getIdioma() + " ");
-		MyIO.print(getSituacao() + " ");
-		MyIO.print(getOrcamento() + " ");
-		MyIO.print("[");
-		ArrayList<String> chaves = getListChaves();
-		for (int i = 0; i < chaves.size(); i++) {
-			if (i < chaves.size() - 1) {
-				MyIO.print(chaves.get(i) + ", ");
-			} else {
-				MyIO.print(chaves.get(i));
-			}
-		}
-		MyIO.print("]");
-		MyIO.println("");
-	}
-
-	// Metódo responsável por tratar uma linha e remover TAGS do html
-	// Essa linha filtra os dados e pega somente o bruto necessário
-	// Usando funções criadas dentro da classe de Ferramentas
-	private String tratarLinha(String linha, int op) {
-		String resp = "";
-		linha = Ferramentas.inicioTrim(linha, '<');
-		// Para cada entrada tem um tratamento de linha diferenciado
-		switch (op) {
-			case 1:
-				String locale = Ferramentas.mySubstring(linha, Ferramentas.myIndexOf(linha, '('),
-						Ferramentas.myIndexOf(linha, ')') + 1);// remoção do (BR) (US) etc
-				linha = Ferramentas.myReplace(linha, " " + locale, " ");
-				resp = Ferramentas.myTrim(linha);
-				break;
-			case 2:
-				resp = Ferramentas.removeTags(linha, ',');
-				resp = Ferramentas.myReplace(resp, ",,&nbsp;", "");
-				break;
-			case 3:
-				if (Ferramentas.myContains(linha, "m")) {
-					linha = Ferramentas.myReplace(linha, 'm', ' ');
-					if (Ferramentas.myContains(linha, "h")) {
-						linha = Ferramentas.myReplace(linha, 'h', ' ');
-					} else {
-						resp = " " + linha;
-						linha = resp;
-						resp = "";
-					}
-					resp = "" + Ferramentas.getMinutos(linha);
-				} else {
-					linha = Ferramentas.myReplace(linha, 'h', ' ');
-					linha  = Ferramentas.myTrim(linha);
-					resp = "" + (Integer.parseInt(linha) * 60);
-				}
-				break;
-			case 4:
-				resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>Título original</strong> ", "");
-				resp = Ferramentas.myReplace(resp, "</p>", "");
-				break;
-			case 5:
-				resp = Ferramentas.myReplace(linha, "<strong><bdi>Situação</bdi></strong> ", "");
-				break;
-			case 6:
-				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Idioma original</bdi></strong> ", "");
-				resp = Ferramentas.myReplace(resp, "</p>", "");
-				break;
-			case 7:
-				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Orçamento</bdi></strong> ", "");
-				resp = Ferramentas.myReplace(resp, "</p>", "");
-				if (Ferramentas.myContains(linha, "-")) {
-					resp = "0.0";
-				} else {
-					resp = Ferramentas.myReplace(resp, ",", "");
-					resp = Ferramentas.myReplace(resp, "$", "");
-				}
-				break;
-			case 8:
-				resp = Ferramentas.removeTags(linha);
-				break;
-			case 9:
-				resp = Ferramentas.myReplace(linha, "<meta property=\"og:title\" content=\"", "");
-				resp = Ferramentas.myReplace(resp, "\">", "");
-				break;
-			default:
-				break;
-		}
-		return resp;
-	}
-
-	// Função que retorna um arquivo de html para poder ser realizado as consultas e
-	// extração de dados
-	private File getFile(String name) throws IOException {
-		File file;
-		//file = new File("tmp/filmes/" + name);
-		file = new File("/tmp/filmes/" + name);
-		if (!file.isFile()) {
-			throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
-		} else {
-			return file;
 		}
 	}
-
+	return resp;
 }
 
-class Lista {
-
-	// Posso usar essa classe para instanciar as filas, pilhas e listas
-
-	public Lista() {
-		this(5);
+// função que junta e retorna duas strings
+char *juntar(char *frase, char *juncao)
+{
+	char *resp;
+	int n = 0, j = 0;
+	resp = malloc(sizeof(char *) * (strlen(frase) + strlen(juncao)));
+	for (int i = 0; i < (strlen(frase)); i++)
+	{
+		resp[n] = frase[i];
+		n++;
 	}
-
-	public Lista(int num) {
-		filmes = new Filme[num];
+	for (int i = 0; i < (strlen(juncao)); i++)
+	{
+		resp[n] = juncao[i];
+		n++;
 	}
-
-	private Filme[] filmes;
-	private int count = 0;
-
-	/**
-	 * Insere um elemento na primeira posicao da lista e move os demais
-	 * elementos para o fim da lista.
-	 * 
-	 * @param fm Filme elemento a ser inserido.
-	 */
-	public void inserirInicio(Filme fm) {
-		for (int i = count; i > 0; i--) {
-			filmes[i] = filmes[i - 1];
-		}
-		filmes[0] = fm;
-		count++;
-	}
-
-	/**
-	 * Insere um elemento em uma posicao especifica e move os demais
-	 * elementos para o fim da lista.
-	 * 
-	 * @param fm  Filme elemento a ser inserido.
-	 * @param pos Posicao de insercao.
-	 */
-	public void inserir(Filme fm, int pos) {
-		for (int i = count; i > pos; i--) {
-			filmes[i] = filmes[i - 1];
-		}
-		filmes[pos] = fm;
-		count++;
-	}
-
-	/**
-	 * Remove um elemento da primeira posicao da lista e movimenta
-	 * os demais elementos para o inicio da mesma.
-	 * 
-	 * @return resp int elemento a ser removido.
-	 */
-	public Filme removerInicio() {
-		Filme resp = filmes[0].clonar();
-		count--;
-		for (int i = 0; i < count; i++) {
-			filmes[i] = filmes[i + 1];
-		}
-		return resp;
-	}
-
-	/**
-	 * Remove um elemento da ultima posicao da lista.
-	 * 
-	 * @return resp int elemento a ser removido.
-	 */
-	public Filme removerFim() {
-		return filmes[--count].clonar();
-	}
-
-	/**
-	 * Remove um elemento de uma posicao especifica da lista e
-	 * movimenta os demais elementos para o inicio da mesma.
-	 * 
-	 * @param pos Posicao de remocao.
-	 * @return resp int elemento a ser removido.
-	 */
-	public Filme remover(int pos) {
-		Filme resp = filmes[pos].clonar();
-		count--;
-		for (int i = pos; i < count; i++) {
-			filmes[i] = filmes[i + 1];
-		}
-		return resp;
-	}
-
-	// Inserir dentro da lista de filmes na última posição
-	public void inserirFim(Filme obj) {
-		filmes[count] = obj;
-		count++;
-	}
-
-	// Imprimir informações de todos os filmes cadastrados
-	public void imprimir() {
-		for (int j = 0;j<count;j++) {
-			MyIO.print("[" + j + "] ");
-			filmes[j].imprimir();
-		}
-		MyIO.println();
-	}
-
-	/**
-	 * Retorna o timestamp atual
-	 * 
-	 * @return timestamp atual
-	 */
-	public long now() {
-		return System.currentTimeMillis();
-	}
-
-	private int comp;
-
-	public void setComp(int comp) {
-		this.comp = comp;
-	}
-
-	public int getComparacoes() {
-		return this.comp;
-	}
-
-	// Pesquisa binária entre Strings desenvolvida para funcionar junto de uma
-	// checagem de ordem alfabetica entre duas strings para realizar uma busca
-	// mais rápida e com mais precisão --> CheckAlfa retorna se uma string é maior
-	// que outra
-	public boolean findBinario(String nome) {
-		boolean resp = false;
-		int dir = (filmes.length - 1), esq = 0, meio, comp = 0;
-		while (esq <= dir) {
-			meio = (esq + dir) / 2;
-			comp++;
-			if (nome.equals(filmes[meio].getNome())) {
-				resp = true;
-				esq = dir + 1;
-			} else if (Ferramentas.isStrMaior(nome, filmes[meio].getNome())) { // checando a ordem de Strings
-				comp++;
-				esq = meio + 1;
-			} else {
-				comp++;
-				dir = meio - 1;
-			}
-		}
-		setComp(comp);
-		return resp;
-	}
-
+	return resp;
 }
 
-public class Tp2Q5 {
-
-	private static boolean isFim(String entrada) {
-		return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
-	}
-
-	public static void main(String[] args) {
-		ArrayList<String> entradas = new ArrayList<>();
-		ArrayList<String> removes = new ArrayList<>();
-		String verificacoes[];
-		Lista listaFilmes;
-		int n = 0, pos = 0, count = 0;
-		String entrada = "", comando, aux = "";
-		MyIO.setCharset("UTF-8");
-		do {
-			entrada = MyIO.readLine();
-			if (!isFim(entrada)) {
-				entradas.add(entrada);
+// Função que retorna o index de um char dentro de um array de chars
+int myIndexOf(char frase[STRMAX], char letra)
+{
+	int resp = -1;
+	if (frase != NULL)
+	{
+		for (int i = 0; i < strlen(frase); i++)
+		{
+			if (frase[i] == letra)
+			{
+				resp = i;
+				i = strlen(frase);
 			}
-		} while (!isFim(entrada));
-		n = MyIO.readInt();
-		verificacoes = new String[n];
-		// salvando comandos de verificação para serem executados
-		for (int i = 0; i < n; i++) {
-			verificacoes[i] = entrada = MyIO.readLine();
-			if (Ferramentas.myContains(verificacoes[i].substring(0, 1), "I")) {
+		}
+	}
+	return resp;
+}
+
+/**
+ * Função que simula o trim da classe char*
+ */
+char *myTrim(char frase[STRMAX])
+{
+	char *resp;
+	resp = malloc(sizeof(char) * strlen(frase));
+	int pos = 0;
+	if (frase != NULL)
+	{
+		for (int i = 0; i < strlen(frase); i++)
+		{
+			if (frase[i] != ' ')
+			{
+				resp[pos] = frase[i];
+				pos++;
+			}
+		}
+	}
+	return resp;
+}
+
+/**
+ * Função que simula o Subchar* da classe char*
+ */
+char *mySubString(char frase[STRMAX], int inic, int fim)
+{
+	char *resp;
+	resp = (char *)malloc(strlen(frase) * sizeof(char));
+	int pos = 0;
+	if (frase != NULL)
+	{
+		if (fim - inic <= strlen(frase))
+		{
+			for (int i = inic; i < fim; i++)
+			{
+				resp[pos] = frase[i];
+				pos++;
+			}
+		}
+	}
+	if (strlen(resp) > fim - inic)
+	{
+		for (int i = fim - inic; i < strlen(resp); i++)
+		{
+			resp[i] = '\0';
+		}
+	}
+	return resp;
+}
+
+/**
+ * Função que simula o Subchar* da classe char*
+ */
+char *mySubStringCh(char frase[STRMAX], char cInic, char cFim)
+{
+	char *resp;
+	resp = malloc((sizeof(char *) * strlen(frase)) + 1);
+	if (frase != NULL)
+	{
+		int inic = myIndexOf(frase, cInic);
+		int fim = myIndexOf(frase, cFim);
+		int pos = 0;
+		if (fim - inic <= strlen(frase))
+		{
+			for (int i = inic; i < fim + 1; i++)
+			{
+				resp[pos] = frase[i];
+				pos++;
+			}
+		}
+	}
+	return resp;
+}
+
+/*
+Função de replace entre Strings, passamos uma string alvo para realizar as trocas
+uma string que deve ser o que vai ser mudado e uma string contendo o texto de mudança
+Simula o funcionamento da String.replace() do Java
+*/
+char *myReplace(char *orig, char *rep, char *with)
+{
+	char *result, *ins, *tmp;
+	int len_rep, len_with, len_front, count;
+	// condicionamento se os parametros foram passados corretamente
+	if (!orig || !rep)
+		return NULL;
+	len_rep = strlen(rep);
+	if (len_rep == 0)
+		return NULL;
+	if (!with)
+		with = "";
+	len_with = strlen(with);
+	ins = orig;
+	for (count = 0; tmp = strstr(ins, rep); ++count)
+	{
+		ins = tmp + len_rep;
+	}
+	tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+	if (!result)
+		return NULL;
+	while (count--)
+	{
+		ins = strstr(orig, rep);
+		len_front = ins - orig;
+		tmp = strncpy(tmp, orig, len_front) + len_front;
+		tmp = strcpy(tmp, with) + len_with;
+		orig += len_front + len_rep;
+	}
+	strcpy(tmp, orig);
+	return result;
+}
+
+// Função para ler entre espaços dentro de uma frase
+// No maximo dois espaços
+char *lerEntreSpaces(char frase[STRMAX])
+{
+	int count = 0;
+	char *resp;
+	resp = (char *)malloc(strlen(frase) * sizeof(char));
+	bool check = false;
+	for (int i = 0; i < strlen(frase); i++)
+	{
+		if (frase[i] == ' ')
+		{
+			if (check)
+			{
+				i = strlen(frase);
+			}
+			else
+			{
+				check = true;
+			}
+		}
+		else if (check)
+		{
+			resp[count] = frase[i];
+			count++;
+		}
+	}
+	for (int i = 0; i < strlen(resp); i++)
+	{
+		if (resp[i] < 48 || resp[i] > 57)
+		{
+			resp[i] = '\0';
+		}
+	}
+	return resp;
+}
+
+/**
+ * Função que remove espaços do inicio de frases
+ */
+char *inicioTrim(char line[STRMAX], char end)
+{
+	char *resp;
+	resp = malloc(sizeof(char) * strlen(line));
+	bool next = false;
+	int count = 0;
+	if (line != NULL)
+	{
+		for (int i = 0; i < strlen(line); i++)
+		{
+			if (line[i] == end)
+			{
+				next = true;
+			}
+			if (next)
+			{
+				resp[count] = line[i];
 				count++;
 			}
 		}
+	}
+	if (strlen(resp) == 0)
+	{
+		return line;
+	}
+	return resp;
+}
 
-		// criação dos objetos de filme/leitura/impressao
-		listaFilmes = new Lista(entradas.size() + count);
-		for (String ent : entradas) {
-			Filme filme = new Filme(ent);
-			listaFilmes.inserirFim(filme);
-		}
-
-		// executando comandos da lista de acordo com a demanda
-		for (int i = 0; i < n; i++) {
-			comando = verificacoes[i];
-			//System.out.println(comando);
-			if (Ferramentas.myContains(comando, "II")) {
-				listaFilmes.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-			} else if (Ferramentas.myContains(comando, "IF")) {
-				listaFilmes.inserirFim(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-			} else if (Ferramentas.myContains(comando, "I*")) {
-				aux = Ferramentas.lerEntreSpaces(comando);
-				pos = Integer.parseInt(aux);
-				listaFilmes.inserir(new Filme(Ferramentas.mySubstring(comando, aux.length() + 4, comando.length())),
-						pos);
-			} else if (Ferramentas.myContains(comando, "RI")) {
-				removes.add(listaFilmes.removerInicio().getNome());
-			} else if (Ferramentas.myContains(comando, "RF")) {
-				removes.add(listaFilmes.removerFim().getNome());
-			} else if (Ferramentas.myContains(comando, "R*")) {
-				pos = Integer.parseInt(Ferramentas.lerEntreSpaces(comando));
-				removes.add(listaFilmes.remover(pos).getNome());
+/**
+ * Função que remove tags e puxa tudo que esta entre elas
+ */
+char *removeTags(char *line)
+{
+	char *resp;
+	resp = malloc(sizeof(char) * strlen(line));
+	int pos = 0;
+	bool next = false;
+	if (line != NULL)
+	{
+		for (int i = 0; i < strlen(line); i++)
+		{
+			if (line[i] == '>')
+				next = true;
+			else if (line[i] == '<')
+				next = false;
+			else if (next)
+			{
+				resp[pos] = line[i];
+				pos++;
 			}
-			/*
-			System.out.println("----------------------------------------------------------------------");
-			System.out.println("COMANDO: "+comando);
-			listaFilmes.imprimir();
-			System.out.println("----------------------------------------------------------------------");
-			*/
 		}
-		// Printando resultados das inserções e remoções
-		for (String name : removes) {
-			MyIO.println("(R) " + name);
+	}
+	return resp;
+}
+
+/**
+ * Função que remove tags e puxa tudo que esta entre elas e adiciona separadores
+ * para palavras
+ */
+char *removeTagsSe(char line[STRMAX], char sep)
+{
+	char *resp;
+	resp = malloc(sizeof(char) * strlen(line));
+	int count = 0, pos = 0;
+	bool next = false;
+	if (line != NULL)
+	{
+		for (int i = 0; i < strlen(line); i++)
+		{
+			if (line[i] == '>')
+			{
+				next = true;
+			}
+			else if (line[i] == '<')
+			{
+				next = false;
+				if (count > 0)
+				{
+					resp[pos] = sep;
+					pos++;
+				}
+				count = 0;
+			}
+			else if (next)
+			{
+				count++;
+				resp[pos] = line[i];
+				pos++;
+			}
 		}
-		listaFilmes.imprimir();
+	}
+	return resp;
+}
+
+// função para printar a data de uma Struct Date
+void printDate(Date date)
+{
+	printf("%02d/%02d/%d", date.dia, date.mes, date.ano);
+}
+
+// Conversão de String para Struct Date (formada por inteiros de dia/mes/ano)
+Date convertDate(char *linha)
+{
+	Date date;
+	date.dia = atoi(mySubString(linha, 0, 2));
+	date.mes = atoi(mySubString(linha, 3, 5));
+	date.ano = atoi(mySubString(linha, 6, 10));
+	return date;
+}
+
+// Função que retorna o arquivo HTML com base no nome passado por parametro
+FILE *getFile(char name[STRMAX])
+{
+	FILE *file;
+	char *buffer;
+	buffer = malloc(sizeof(char *) * (strlen(name) + strlen("/tmp/filmes/") + 1));
+	buffer = juntar("/tmp/filmes/", name);
+	file = fopen(buffer, "r");
+	if (file == NULL)
+	{
+		printf("ERRO AO TENTAR PROCURAR ARQUIVO\n");
+		printf("file bad: %s.\n", name);
+		printf("path: %s.\n", buffer);
+		exit(1);
+	}
+	free(buffer);
+	return file;
+}
+
+// funcao que remove letras e gera um horario em formato de minutos pronto para
+// uso
+// realizando o calculo automatico das horas se possível (Horas * 60 = horas em
+// minutos)
+int getMinutos(char linha[STRMAX])
+{
+	char *hr, *mn;
+	hr = malloc(sizeof(char) * strlen(linha));
+	mn = malloc(sizeof(char) * strlen(linha));
+	int posh = 0, posm = 0;
+	int conta = 0;
+	bool chk = false;
+	if (linha != NULL)
+	{
+		for (int i = 0; i < strlen(linha); i++)
+		{
+			if (chk)
+			{
+				if (linha[i] != ' ')
+				{
+					mn[posm] = linha[i];
+					posm++;
+				}
+			}
+			else
+			{
+				if (linha[i] != ' ')
+				{
+					hr[posh] = linha[i];
+					posh++;
+				}
+				else
+				{
+					chk = true;
+				}
+			}
+		}
+		conta = atoi(mn);
+		if (strlen(hr) > 0)
+		{
+			conta += atoi(hr) * 60;
+		}
+	}
+	free(hr);
+	free(mn);
+	return conta;
+}
+
+// Método responsável por ler a linha e remover suas tags/tratar os dados
+char *tratarLinha(char linha[STRMAX], int op)
+{
+	linha[strcspn(linha, "\n")] = 0; // removo o \n de dentro da linha que foi lida
+	char *resp;
+	resp = malloc(sizeof(char) * strlen(linha)); // Aloco espaço para a resposta em String
+	int pos = 0;
+	char *locale;
+	linha = inicioTrim(linha, '<');
+	// Dentro desse Switch são utilizados diversos métodos e funções diferentes que
+	// extraem os dados e preparam a linha para ser inserida dentro da Struct de filme
+	switch (op)
+	{
+	case 1:
+		locale = mySubString(linha, myIndexOf(linha, '('), myIndexOf(linha, ')') + 1);
+		char buffer[STRMAX];
+		// memccpy(memccpy(buffer, " ", '\0', STRMAX) - 1, locale, '\0', STRMAX);
+		strcpy(buffer, juntar(" ", locale));
+		linha = myReplace(linha, buffer, " ");
+		resp = myTrim(linha);
+		break;
+	case 2:
+		resp = removeTagsSe(linha, ',');
+		resp = myReplace(resp, ",,&nbsp;", "");
+		break;
+	case 3:
+		linha = myReplaceCh(linha, 'm', ' ');
+		if (strstr(linha, "h"))
+		{
+			linha = myReplaceCh(linha, 'h', ' ');
+		}
+		else
+		{
+			linha = juntar(" ", linha);
+		}
+		int x = getMinutos(linha);
+		int length = snprintf(NULL, 0, "%d", x);
+		snprintf(resp, length + 1, "%d", x);
+		break;
+	case 4:
+		resp = myReplace(linha, "<p class=\"wrap\"><strong>Título original</strong> ", "");
+		resp = myReplace(resp, "</p>", "");
+		break;
+	case 5:
+		resp = myReplace(linha, "<strong><bdi>Situação</bdi></strong> ", "");
+		break;
+	case 6:
+		resp = myReplace(linha, "<p><strong><bdi>Idioma original</bdi></strong> ", "");
+		resp = myReplace(resp, "</p>", "");
+		break;
+	case 7:
+		resp = myReplace(linha, "<p><strong><bdi>Orçamento</bdi></strong> ", "");
+		resp = myReplace(resp, "</p>", "");
+		if (strstr(linha, "-"))
+		{
+			resp = "0.0";
+		}
+		else
+		{
+			resp = myReplace(resp, ",", "");
+			resp = myReplace(resp, "$", "");
+		}
+		break;
+	case 8:
+		resp = removeTags(linha);
+		break;
+	case 9:
+		resp = myReplace(linha, "<meta property=\"og:title\" content=\"", "");
+		resp = myReplace(resp, "\">", "");
+		break;
+	default:
+		break;
+	}
+	return resp;
+}
+
+// Função responsável por realizar a leitura do arquivo e capturar o dado bruto das linhas
+// que precisam ter a extração de dados.
+// Utilizando a função strstr para verificar se uma linha contém uma condição de extração
+Filme ler(Filme filme, char *entrada)
+{
+	char *line;
+	char *aux;
+	size_t len = 0;
+	FILE *buff = getFile(entrada); // Recebendo o file HTML
+	getline(&line, &len, buff);
+	while (!strstr(line, "og:title"))
+	{
+		line = "\0"; // Por precaução zero a linha que foi lida anteriormente
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	strcpy(filme.nome, tratarLinha(line, 9));
+	// Zero a linha para evitar um erro de Lixo nas Strings que estava ocorrendo anteriormente
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	while (!strstr(line, "class=\"release\""))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	filme.lancamento = convertDate(tratarLinha(line, 1));
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	while (!strstr(line, "class=\"genres\""))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	strcpy(filme.genero, tratarLinha(line, 2));
+	strcpy(filme.genero, mySubString(filme.genero, 0, strlen(filme.genero) - 1));
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	while (!strstr(line, "class=\"runtime\""))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	getline(&line, &len, buff);
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	filme.duracao = atoi(tratarLinha(line, 3));
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	bool chk = false;
+	while (!strstr(line, "Título original"))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+		if (strstr(line, "<bdi>Situação</bdi>"))
+		{
+			strcpy(filme.titulo, filme.nome);
+			chk = true;
+			break;
+		}
+	}
+	if (chk == false)
+	{
+		strcpy(filme.titulo, tratarLinha(line, 4));
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	while (!strstr(line, "Situação"))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	strcpy(filme.situacao, tratarLinha(line, 5));
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	while (!strstr(line, "Idioma original"))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	strcpy(filme.idioma, tratarLinha(line, 6));
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	while (!strstr(line, "Orçamento"))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	filme.orcamento = atof(tratarLinha(line, 7));
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	while (!strstr(line, "Palavras-chave"))
+	{
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	getline(&line, &len, buff);
+	line = "\0";
+	len = 0;
+	getline(&line, &len, buff);
+	if (strstr(line, "Nenhuma palavra-chave foi adicionada"))
+	{
+		strcpy(line, "</ul>");
+	}
+	int n = 0;
+	while (!strstr(line, "</ul>"))
+	{
+		if (strstr(line, "<li>"))
+		{
+			aux = tratarLinha(line, 8);
+			filme.keywords[n] = (char *)malloc((strlen(aux) + 1) * sizeof(char)); // Salvando varias palavras em um vetor de strings
+			strcpy(filme.keywords[n], aux);
+			n++;
+		}
+		line = "\0";
+		len = 0;
+		getline(&line, &len, buff);
+	}
+	filme.numkey = n;
+	fclose(buff); // encerrando Buff de entrada do arquivo
+	return filme;
+}
+
+// Procedimento para imprimir os dados de um Filme especifico
+void imprimir(Filme filme)
+{
+	printf("%s ", filme.nome);
+	printf("%s ", filme.titulo);
+	printDate(filme.lancamento);
+	printf(" ");
+	printf("%d ", filme.duracao);
+	printf("%s ", filme.genero);
+	printf("%s ", filme.idioma);
+	printf("%s ", filme.situacao);
+	if (filme.orcamento == 0)
+	{
+		printf("0 ");
+	}
+	else
+	{
+		printf("%g ", filme.orcamento);
+	}
+	printf("[");
+	for (int j = 0; j < filme.numkey; j++)
+	{
+		if (j < filme.numkey - 1)
+			printf("%s, ", filme.keywords[j]);
+		else
+			printf("%s", filme.keywords[j]);
+	}
+	printf("]\n");
+}
+
+bool isFim(char *entrada)
+{
+	entrada[strcspn(entrada, "\n")] = 0;
+	entrada[strcspn(entrada, "\r")] = 0;
+	return strlen(entrada) == 3 && entrada[0] == 'F' && entrada[1] == 'I' && entrada[2] == 'M';
+}
+
+Filme *filmes;
+int n, MAXTAM;
+
+void start(int count, int vers)
+{
+	n = 0;
+	// gerando lista de filmes em C
+	MAXTAM = count + vers;
+	filmes = malloc((sizeof(Filme) + 1) * MAXTAM);
+}
+
+/**
+ * Insere um elemento na primeira posicao da lista e move os demais
+ * elementos para o fim da
+ * @param fm int elemento a ser inserido.
+ */
+void inserirInicio(Filme fm)
+{
+	if (n >= MAXTAM)
+	{
+		printf("Erro ao inserir!");
+		exit(1);
+	}
+	for (int i = n; i > 0; i--)
+	{
+		filmes[i] = filmes[i - 1];
+	}
+	filmes[0] = fm;
+	n++;
+}
+
+/**
+ * Insere um elemento na ultima posicao da
+ * @param fm int elemento a ser inserido.
+ */
+void inserirFim(Filme fm)
+{
+	if (n >= MAXTAM)
+	{
+		printf("Erro ao inserir!");
+		exit(1);
+	}
+	filmes[n] = fm;
+	n++;
+}
+
+/**
+ * Insere um elemento em uma posicao especifica e move os demais
+ * elementos para o fim da
+ * @param fm int elemento a ser inserido.
+ * @param pos Posicao de insercao.
+ */
+void inserir(Filme fm, int pos)
+{
+
+	if (n >= MAXTAM || pos < 0 || pos > n)
+	{
+		printf("Erro ao inserir!");
+		exit(1);
 	}
 
+	for (int i = n; i > pos; i--)
+	{
+		filmes[i] = filmes[i - 1];
+	}
+
+	filmes[pos] = fm;
+	n++;
+}
+
+/**
+ * Remove um elemento da primeira posicao da lista e movimenta
+ * os demais elementos para o inicio da mesma.
+ * @return resp Filme elemento a ser removido.
+ */
+Filme removerInicio()
+{
+	Filme resp;
+	if (n == 0)
+	{
+		printf("Erro ao remover!");
+		exit(1);
+	}
+	resp = filmes[0];
+	n--;
+	for (int i = 0; i < n; i++)
+	{
+		filmes[i] = filmes[i + 1];
+	}
+	return resp;
+}
+
+/**
+ * Remove um elemento da ultima posicao da
+ * @return resp Filme elemento a ser removido.
+ */
+Filme removerFim()
+{
+	if (n == 0)
+	{
+		printf("Erro ao remover!");
+		exit(1);
+	}
+
+	return filmes[--n];
+}
+
+/**
+ * Remove um elemento de uma posicao especifica da lista e
+ * movimenta os demais elementos para o inicio da mesma.
+ * @param pos Posicao de remocao.
+ * @return resp Filme elemento a ser removido.
+ */
+Filme remover(int pos)
+{
+	Filme resp;
+	if (n == 0 || pos < 0 || pos >= n)
+	{
+		printf("Erro ao remover!");
+		exit(1);
+	}
+	resp = filmes[pos];
+	n--;
+	for (int i = pos; i < n; i++)
+	{
+		filmes[i] = filmes[i + 1];
+	}
+	return resp;
+}
+
+int main()
+{
+	char *entradas[1000]; // Array de entradas com os endereços dos filmes
+	char entrada[STRMAX], comando[STRMAX];
+	char *verificacoes[1000]; // Array de entradas com os endereços dos filmes
+	// char *remocoes[1000];	  // Array de remocoes contendo nome dos filmes removidos
+	int count = 0, countver = 0, vers = 0, num = 0, ctr = 0;
+	do
+	{
+		fgets(entrada, STRMAX, stdin);
+		// printf("%s",entrada);
+		if (!isFim(entrada))
+		{
+			entradas[count] = (char *)malloc((strlen(entrada) + 1) * sizeof(char));
+			strcpy(entradas[count], entrada);
+			count++;
+		}
+	} while (!isFim(entrada));
+	// inserindo verificações
+	scanf("%d%*c", &num);
+	// fgets(entrada, STRMAX, stdin);
+	for (int i = 0; i < num; i++)
+	{
+		fgets(entrada, STRMAX, stdin);
+		// printf("%s\n",entrada);
+		verificacoes[countver] = (char *)malloc((strlen(entrada) + 1) * sizeof(char));
+		strcpy(verificacoes[countver], entrada);
+		countver++;
+		if (strstr(mySubString(verificacoes[i], 0, 1), "I"))
+		{
+			vers++;
+		}
+	}
+	start(count, vers);
+	// criação dos objetos de filme/leitura/impressao
+	for (int i = 0; i < count; i++)
+	{
+		Filme f;
+		f = ler(f, entradas[i]);
+		inserirFim(f);
+	}
+
+	// executando comandos da lista de acordo com a demanda
+	for (int i = 0; i < num; i++)
+	{
+		strcpy(comando, verificacoes[i]);
+		comando[strcspn(comando, "\n")] = 0;
+		comando[strcspn(comando, "\r")] = 0;
+		/*
+		printf("---------------------------------------------------------------------------------------------------------------> \n %s %d\n", comando, i);
+		for (int i = 0; i < n; i++)
+		{
+			printf("[%d] ", i);
+			imprimir(filmes[i]);
+		}
+		printf("--------------------------------------------------------------------------------------------------------------------- \n");
+		printf("%s \n",comando);
+		*/
+		if (strstr(comando, "II"))
+		{
+			// printf("%s - %s -  %d \n", comando, mySubString(comando, 3, strlen(comando)), (int)strlen(comando));
+			Filme fm = ler(fm, mySubString(comando, 3, strlen(comando)));
+			inserirInicio(fm);
+		}
+		else if (strstr(comando, "IF"))
+		{
+			Filme fm = ler(fm, mySubString(comando, 3, strlen(comando)));
+			inserirFim(fm);
+		}
+		else if (strstr(comando, "I*"))
+		{
+			char aux[STRMAX];
+			strcpy(aux, lerEntreSpaces(comando));
+			int pos = atoi(aux);
+			Filme fm = ler(fm, mySubString(comando, strlen(aux) + 4, strlen(comando)));
+			inserir(fm, pos);
+		}
+		else if (strstr(comando, "RI"))
+		{
+			printf("(R) %s\n", removerInicio().nome);
+			// remocoes[ctr] = (char *)malloc(STRMAX * sizeof(char));
+			// strcpy(remocoes[ctr], removerInicio().nome);
+			// ctr++;
+		}
+		else if (strstr(comando, "RF"))
+		{
+			// remocoes[ctr] = (char *)malloc(STRMAX * sizeof(char));
+			// strcpy(remocoes[ctr], removerFim().nome);
+			printf("(R) %s\n", removerFim().nome);
+			// ctr++;
+		}
+		else if (strstr(comando, "R*"))
+		{
+			int pos = atoi(lerEntreSpaces(comando));
+			// remocoes[ctr] = (char *)malloc(STRMAX * sizeof(char));
+			// strcpy(remocoes[ctr], remover(pos).nome);
+			printf("(R) %s\n", remover(pos).nome);
+			// ctr++;
+		}
+	}
+
+	/* Printando resultados das inserções e remoções
+	for (int j = 0; j < ctr; j++)
+	{
+		printf("(R) %s \n", remocoes[j]);
+	}
+	*/
+	for (int i = 0; i < n; i++)
+	{
+		printf("[%d] ", i);
+		imprimir(filmes[i]);
+	}
+
+	return 0;
 }
