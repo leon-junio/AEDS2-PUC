@@ -23,21 +23,36 @@ class Ferramentas {
     // ver --> String que vai ser usada como comparação
     public static boolean isStrMaior(String frase, String ver) {
         boolean resp = false;
-        for (int i = 0; i < ver.length(); i++) {
-            if (frase.charAt(i) < ver.charAt(i)) {
-                resp = false;
-                i = ver.length();
-            } else if (frase.charAt(i) > ver.charAt(i)) {
-                resp = true;
-                i = ver.length();
-            } else if (i == ver.length()) {
-                if (ver.length() == frase.length()) {
-                    resp = false;
-                } else {
-                    resp = true;
+        try {
+            if (!frase.equals(ver)) {
+                for (int i = 0; i < ver.length(); i++) {
+                    if (i >= frase.length()) {
+                        if (frase.length() == ver.length() && frase.equals(ver.substring(0,frase.length()))) {
+                            resp = false;
+                        } else {
+                            resp = true;
+                        }
+                        i = ver.length();
+                    } else if (frase.charAt(i) < ver.charAt(i)) {
+                        resp = false;
+                        i = ver.length();
+                    } else if (frase.charAt(i) > ver.charAt(i)) {
+                        resp = true;
+                        i = ver.length();
+                    } else if (i == ver.length()) {
+                        if (ver.length() == frase.length()) {
+                            resp = false;
+                        } else {
+                            resp = true;
+                        }
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(frase + " " + ver);
         }
+        System.out.println(frase+" "+ver+" resp:"+resp);
         return resp;
     }
 
@@ -713,8 +728,8 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        //file = new File("/tmp/filmes/" + name);
-        file = new File("../tmp/filmes/" + name);
+        file = new File("/tmp/filmes/" + name);
+        //file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
@@ -783,74 +798,87 @@ class Lista {
         return this.comp;
     }
 
-    /*
-     * Pesquisa sequencial dentro da lista de filmes percorrendo o vetor até
-     * encontrar a String desejada
-     * Caso encontre ele para a execução do for para ganhar mais performance e no
-     * pior caso vai realizar
-     * todas as n comparações até encontrar o resultado
-     */
-    public boolean findSequencial(String nome) {
-        boolean resp = false;
-        int comp = 0;
-        for (int i = 0; i < filmes.length; i++) {
+    // função que reconstroi um heap ja criado
+    public void reconstruir(int tamHeap) {
+        int i = 1;
+        mov++;
+        while (i <= (tamHeap / 2)) {
+            int filho = getMaiorFilho(i, tamHeap);
+            mov++;
             comp++;
-            if (filmes[i].getNome().equals(nome)) {
-                resp = true;
-                i = filmes.length;
+            if (filmes[i].getGenero().compareTo(filmes[filho].getGenero())<0) {
+                swap(i, filho);
+                i = filho;
+                mov += 4;
+            } else {
+                i = tamHeap;
+                mov++;
             }
         }
-        setComp(comp);
-        return resp;
+    }
+
+    // função que retorna o maior filho
+    public int getMaiorFilho(int i, int tamHeap) {
+        int filho;
+        comp++;
+        if (2 * i == tamHeap || filmes[2 * i].getGenero().compareTo(filmes[2 * i + 1].getGenero())>0) {
+            filho = 2 * i;
+            mov++;
+        } else {
+            filho = 2 * i + 1;
+            mov++;
+        }
+        return filho;
+    }
+
+    // função que constroi o heap
+    public void construir(int tamHeap) {
+        for (int i = tamHeap; i > 1
+                && filmes[i].getGenero().compareTo(filmes[i / 2].getGenero())>0; i /= 2) {
+            swap(i, i / 2);
+            mov += 3;
+        }
     }
 
     /**
      * codigo de ordenação por inserção em Java com Filmes
      */
-    public void insertionSort() {
-        int mov = 0,comp = 0;
-        for (int i = 1; i < count; i++) {
-            Filme tmp = filmes[i];
-            int j = i - 1;
-            mov+=2;
-            comp++;
-            while ((j >= 0) && (filmes[j].getLancamento().after(tmp.getLancamento()))) {
-                filmes[j + 1] = filmes[j];
-                j--;
-                mov++;
-            }
-            filmes[j + 1] = tmp;
+    public void heapSort() {
+        // Alterar o vetor ignorando a posicao zero
+        Filme[] tmp = new Filme[count + 1];
+        for (int i = 0; i < count; i++) {
+            tmp[i + 1] = filmes[i];
             mov++;
         }
-        setComp(comp);
-        setMov(mov);
-    }
+        filmes = tmp;
+        mov++;
 
-    public void insSort() {
-        int mov = 0,comp = 0,aux = 0;
-        for (int i = 1; i < count; i++) {
-            Filme tmp = filmes[i];
-            mov+=2;
+        // Contrucao do heap
+        for (int tamHeap = 2; tamHeap <= count; tamHeap++) {
+            construir(tamHeap);
+        }
+
+        // Ordenacao propriamente dita
+        int tamHeap = count;
+        mov++;
+        while (tamHeap > 1) {
             comp++;
-            for(int j=i-1;j >= 0;j--) {
-                if(filmes[j].getLancamento().after(tmp.getLancamento())){
-                    filmes[j + 1] = filmes[j];
-                    j--;
-                    aux = j;
-                    mov++;
-                    j = -1;
-                }
-            }
-            filmes[aux + 1] = tmp;
+            swap(1, tamHeap--);
+            reconstruir(tamHeap);
+        }
+
+        // Alterar o vetor para voltar a posicao zero
+        tmp = filmes;
+        filmes = new Filme[count];
+        mov += 2;
+        for (int i = 0; i < count; i++) {
+            filmes[i] = tmp[i + 1];
             mov++;
         }
-        setComp(comp);
-        setMov(mov);
     }
-
 }
 
-public class Tp3Q3 {
+public class Tp3Q5 {
 
     private static boolean isFim(String entrada) {
         return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
@@ -875,17 +903,14 @@ public class Tp3Q3 {
             Filme filme = new Filme(ent);
             listaFilmes.inserir(filme);
         }
-
-        // procurando sequencialmente
         inic = listaFilmes.now();
-        listaFilmes.insSort();
+        listaFilmes.heapSort();
         comp += listaFilmes.getComparacoes();
         mov += listaFilmes.getMovimentacoes();
         fim = listaFilmes.now();
-        Ferramentas.gerarLog(inic, fim, comp, mov, "insercao");
+        Ferramentas.gerarLog(inic, fim, comp, mov, "heapsort");
         // imprimindo resultados da ordernação
         listaFilmes.imprimir();
-
     }
 
 }

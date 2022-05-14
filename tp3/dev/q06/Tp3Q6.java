@@ -713,8 +713,8 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        //file = new File("/tmp/filmes/" + name);
-        file = new File("../tmp/filmes/" + name);
+        file = new File("/tmp/filmes/" + name);
+       //file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
@@ -805,52 +805,44 @@ class Lista {
     }
 
     /**
-     * codigo de ordenação por inserção em Java com Filmes
+     * codigo de ordenação por quicksort em Java com Filmes
      */
-    public void insertionSort() {
-        int mov = 0,comp = 0;
-        for (int i = 1; i < count; i++) {
-            Filme tmp = filmes[i];
-            int j = i - 1;
-            mov+=2;
-            comp++;
-            while ((j >= 0) && (filmes[j].getLancamento().after(tmp.getLancamento()))) {
-                filmes[j + 1] = filmes[j];
-                j--;
-                mov++;
-            }
-            filmes[j + 1] = tmp;
-            mov++;
-        }
-        setComp(comp);
-        setMov(mov);
-    }
-
-    public void insSort() {
-        int mov = 0,comp = 0,aux = 0;
-        for (int i = 1; i < count; i++) {
-            Filme tmp = filmes[i];
-            mov+=2;
-            comp++;
-            for(int j=i-1;j >= 0;j--) {
-                if(filmes[j].getLancamento().after(tmp.getLancamento())){
-                    filmes[j + 1] = filmes[j];
+    public void quickSort(int esq, int dir) {
+        int i = esq, j = dir;
+        Filme pivo = filmes[(dir + esq) / 2];
+        if (!filmes[i].getSituacao().equals(filmes[j].getSituacao())
+                && !filmes[i].getSituacao().equals(pivo.getSituacao())) {
+            mov += 3;
+            while (i <= j) {
+                while (filmes[i].getSituacao().compareTo(pivo.getSituacao()) < 0) {
+                    i++;
+                }
+                while (filmes[j].getSituacao().compareTo(pivo.getSituacao()) > 0) {
                     j--;
-                    aux = j;
-                    mov++;
-                    j = -1;
+                }
+                comp++;
+                if (i <= j) {
+                    swap(i, j);
+                    mov += 3;
+                    i++;
+                    j--;
                 }
             }
-            filmes[aux + 1] = tmp;
-            mov++;
+
+            comp++;
+            if (esq < j) {
+                quickSort(esq, j);
+            }
+            comp++;
+            if (i < dir) {
+                quickSort(i, dir);
+            }
         }
-        setComp(comp);
-        setMov(mov);
     }
 
 }
 
-public class Tp3Q3 {
+public class Tp3Q6 {
 
     private static boolean isFim(String entrada) {
         return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
@@ -878,11 +870,11 @@ public class Tp3Q3 {
 
         // procurando sequencialmente
         inic = listaFilmes.now();
-        listaFilmes.insSort();
+        listaFilmes.quickSort(0, entradas.size() - 1);
         comp += listaFilmes.getComparacoes();
         mov += listaFilmes.getMovimentacoes();
         fim = listaFilmes.now();
-        Ferramentas.gerarLog(inic, fim, comp, mov, "insercao");
+        Ferramentas.gerarLog(inic, fim, comp, mov, "quicksort");
         // imprimindo resultados da ordernação
         listaFilmes.imprimir();
 
