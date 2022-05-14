@@ -713,8 +713,8 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        file = new File("/tmp/filmes/" + name);
-        //file = new File("../tmp/filmes/" + name);
+        //file = new File("/tmp/filmes/" + name);
+        file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
@@ -826,6 +826,28 @@ class Lista {
         setMov(mov);
     }
 
+    public void insSort() {
+        int mov = 0,comp = 0,aux = 0;
+        for (int i = 1; i < count; i++) {
+            Filme tmp = filmes[i];
+            mov+=2;
+            comp++;
+            for(int j=i-1;j >= 0;j--) {
+                if(filmes[j].getLancamento().after(tmp.getLancamento())){
+                    filmes[j + 1] = filmes[j];
+                    j--;
+                    aux = j;
+                    mov++;
+                    j = -1;
+                }
+            }
+            filmes[aux + 1] = tmp;
+            mov++;
+        }
+        setComp(comp);
+        setMov(mov);
+    }
+
 }
 
 public class Tp3Q3 {
@@ -856,7 +878,7 @@ public class Tp3Q3 {
 
         // procurando sequencialmente
         inic = listaFilmes.now();
-        listaFilmes.insertionSort();
+        listaFilmes.insSort();
         comp += listaFilmes.getComparacoes();
         mov += listaFilmes.getMovimentacoes();
         fim = listaFilmes.now();
