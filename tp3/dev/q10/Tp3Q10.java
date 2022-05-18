@@ -386,30 +386,34 @@ class Ferramentas {
     // realizando o calculo automatico das horas se possível (Horas * 60 = horas em
     // minutos)
     public static int getMinutos(String linha) {
-		String hr = "", mn = "";
-		int conta = 0;
-		boolean chk = false;
-		if (linha != null) {
-			for (int i = 0; i < linha.length(); i++) {
-				if (chk) {
-					if (linha.charAt(i) != ' ') {
-						mn += linha.charAt(i);
-					}
-				} else {
-					if (linha.charAt(i) != ' ') {
-						hr += linha.charAt(i);
-					} else {
-						chk = true;
-					}
-				}
-			}
-			conta = Integer.parseInt(mn);
-			if (hr.length() > 0) {
-				conta += Integer.parseInt(hr) * 60;
-			}
-		}
-		return conta;
-	}
+        String hr = "", mn = "";
+        int conta = 0;
+        boolean chk = false;
+        if (linha != null) {
+            for (int i = 0; i < linha.length(); i++) {
+                if (chk) {
+                    if (linha.charAt(i) != ' ') {
+                        mn += linha.charAt(i);
+                    }
+                } else {
+                    if (linha.charAt(i) != ' ') {
+                        hr += linha.charAt(i);
+                    } else {
+                        chk = true;
+                    }
+                }
+            }
+            if (mn.length() > 0) {
+                conta = Integer.parseInt(mn);
+            } else {
+                conta = 0;
+            }
+            if (hr.length() > 0) {
+                conta += Integer.parseInt(hr) * 60;
+            }
+        }
+        return conta;
+    }
 
     // Metodo responsavel por formatar uma nova entrada de data
     public static String formatDate(Date dt) {
@@ -713,8 +717,8 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        // file = new File("/tmp/filmes/" + name);
-        file = new File("../tmp/filmes/" + name);
+        file = new File("/tmp/filmes/" + name);
+        //file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
@@ -813,7 +817,7 @@ class Lista {
             throw new Exception("A lista esta vazia!");
         }
         Celula i;
-        for (i = primeiro; i != ultimo; i = i.prox)
+        for (i = primeiro; i.prox != ultimo; i = i.prox)
             ;
         resp = ultimo.elemento;
         ultimo = i;
@@ -847,6 +851,7 @@ class Lista {
             Celula tmp = i.prox;
             resp = tmp.elemento;
             i.prox = tmp.prox;
+            tmp.prox = null;
             i = tmp = null;
         }
         return resp;
@@ -907,6 +912,11 @@ class Lista {
                 MyIO.println(i.elemento.toString());
             }
         }
+    }
+
+    //Chama a recursão para imprimir o inverso
+    public void imprimirReverso() {
+        mostrarRec(primeiro.prox);
     }
 
     // Imprimir informações de todos os filmes cadastrados
@@ -1031,6 +1041,10 @@ public class Tp3Q10 {
                 MyIO.println("(R) " + name);
             }
             listaFilmes.imprimir();
+            /*Filme f = new Filme();
+            f.setTitulo("Gold");
+            System.out.println(listaFilmes.localizar(f));
+            System.out.println(listaFilmes.localizar(3).getNome());*/
         } catch (Exception e) {
             System.out.println("Um erro ocorreu durante a execução do código\n" +
                     "Erro reportado no main --> " + e.getMessage() + " -- " + e.getLocalizedMessage());
