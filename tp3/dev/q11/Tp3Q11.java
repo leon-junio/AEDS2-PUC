@@ -717,8 +717,8 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        file = new File("/tmp/filmes/" + name);
-        //file = new File("../tmp/filmes/" + name);
+        // file = new File("/tmp/filmes/" + name);
+        file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
@@ -728,175 +728,78 @@ class Filme {
 
 }
 
-class Lista {
+// PILHA FLEXIVEL TAD - UTILIZANDO O OBJETO CELULA PARA IMPLEMENTAR A DINAMICA
+class Pilha {
 
-    private Celula primeiro, ultimo;
+    private Celula topo;
 
-    public Lista() {
-        primeiro = new Celula();
-        ultimo = primeiro;
+    public Pilha() {
+        topo = null;
     }
 
-    // Inserir dentro da lista de filmes na última posição
-    public void inserirFim(Filme obj) {
+    // Inserir dentro da Pilha de filmes na última posição
+    public void inserir(Filme obj) {
         Celula tmp = new Celula(obj);
-        ultimo.prox = tmp;
-        ultimo = ultimo.prox;
+        tmp.prox = topo;
+        topo = tmp;
         tmp = null;
     }
 
     /**
-     * Insere um elemento na primeira posicao da lista e move os demais
-     * elementos para o fim da lista.
-     * 
-     * @param fm Filme elemento a ser inserido.
-     */
-    public void inserirInicio(Filme fm) {
-        Celula tmp = new Celula(fm);
-        tmp.prox = primeiro.prox;
-        primeiro.prox = tmp;
-        if (primeiro == ultimo) {
-            ultimo = tmp;
-        }
-        tmp = null;
-    }
-
-    /**
-     * Insere um elemento em uma posicao especifica e move os demais
-     * elementos para o fim da lista.
-     * 
-     * @param fm  Filme elemento a ser inserido.
-     * @param pos Posicao de insercao.
-     */
-    public void inserir(Filme fm, int pos) throws Exception {
-        int tam = tamanho();
-        if (pos == 0) {
-            inserirInicio(fm);
-        } else if (pos == tam - 1) {
-            inserirFim(fm);
-        } else if (pos < 0 || pos >= tam) {
-            throw new Exception("Posição de inserção invalida - pos:" + pos + " size:" + tam);
-        } else {
-            Celula i = primeiro;
-            for (int j = 0; j < pos; j++, i = i.prox)
-                ;
-            Celula tmp = i.prox;
-            i.prox = new Celula(fm);
-            i.prox.prox = tmp;
-            tmp = i = null;
-        }
-    }
-
-    /**
-     * Remove um elemento da primeira posicao da lista e movimenta
-     * os demais elementos para o inicio da mesma.
+     * Remove um elemento da ultima posicao da Pilha.
      * 
      * @return resp int elemento a ser removido.
      */
-    public Filme removerInicio() throws Exception {
+    public Filme remover() throws Exception {
         Filme resp = null;
-        if (primeiro == ultimo) {
-            throw new Exception("A lista esta vazia!");
+        if (topo == null) {
+            throw new Exception("A pilha esta vazia!");
         }
-        Celula tmp = primeiro;
-        resp = tmp.prox.elemento;
-        primeiro = tmp.prox;
+        Celula tmp = topo;
+        resp = tmp.elemento;
+        topo = topo.prox;
         tmp.prox = null;
         tmp = null;
         return resp;
     }
 
-    /**
-     * Remove um elemento da ultima posicao da lista.
-     * 
-     * @return resp int elemento a ser removido.
-     */
-    public Filme removerFim() throws Exception {
-        Filme resp = null;
-        if (primeiro == ultimo) {
-            throw new Exception("A lista esta vazia!");
-        }
-        Celula i;
-        for (i = primeiro; i.prox != ultimo; i = i.prox)
-            ;
-        resp = ultimo.elemento;
-        ultimo = i;
-        ultimo.prox = null;
-        i = null;
-        return resp;
-    }
-
-    /**
-     * Remove um elemento de uma posicao especifica da lista e
-     * movimenta os demais elementos para o inicio da mesma.
-     * 
-     * @param pos Posicao de remocao.
-     * @return resp int elemento a ser removido.
-     */
-    public Filme remover(int pos) throws Exception {
-        Filme resp = null;
-        int tamanho = tamanho();
-        if (primeiro == ultimo) {
-            throw new Exception("A lista esta vazia!");
-        } else if (pos < 0 || pos >= tamanho) {
-            throw new Exception("Posição de remoção inválida nesse contexto! pos:" + pos + " size:" + tamanho);
-        } else if (pos == 0) {
-            removerInicio();
-        } else if (pos == tamanho() - 1) {
-            removerFim();
-        } else {
-            Celula i = primeiro;
-            for (int j = 0; j < pos; j++, i = i.prox)
-                ;
-            Celula tmp = i.prox;
-            resp = tmp.elemento;
-            i.prox = tmp.prox;
-            tmp.prox = null;
-            i = tmp = null;
-        }
-        return resp;
-    }
-
-    // retornar o tamanho da lista dinamica no momento
+    // retornar o tamanho da Pilha dinamica no momento
     public int tamanho() {
         int resp = 0;
-        for (Celula tmp = primeiro; tmp != ultimo; tmp = tmp.prox) {
+        for (Celula tmp = topo; tmp != null; tmp = tmp.prox) {
             resp++;
         }
         return resp;
     }
 
-    // Localizar filme dentro da lista baseado na sua posição
+    // Localizar filme dentro da Pilha baseado na sua posição
     public Filme localizar(int pos) throws Exception {
         Filme resp = null;
         int tam = tamanho();
-        if (primeiro == ultimo) {
-            throw new Exception("A lista se encontra vazia!");
+        if (topo == null) {
+            throw new Exception("A Pilha se encontra vazia!");
         } else if (pos == 0) {
-            resp = primeiro.prox.elemento;
-        } else if (pos == tam - 1) {
-            resp = ultimo.elemento;
+            resp = topo.elemento;
         } else if (pos < 0 || pos >= tam) {
-            throw new Exception("Posição para busca inválida na lista!");
+            throw new Exception("Posição para busca inválida na Pilha!");
         } else {
-            Celula i = primeiro;
-            for (int j = 0; j < pos; i = i.prox, j++)
+            Celula i = topo;
+            for (int j = 0; j < (tam - 2) - pos; i = i.prox, j++)
                 ;
             resp = i.prox.elemento;
         }
         return resp;
     }
 
-    // Localizar objeto de filme dentro da lista
+    // Localizar objeto de filme dentro da Pilha
     public boolean localizar(Filme obj) throws Exception {
         boolean resp = false;
-        if (primeiro == ultimo) {
-            throw new Exception("A lista se encontra vazia!");
+        if (topo == null) {
+            throw new Exception("A Pilha se encontra vazia!");
         } else {
-            for (Celula i = primeiro.prox; i != null; i = i.prox) {
+            for (Celula i = topo; i.prox != null; i = i.prox) {
                 if (i.elemento.getTitulo().equals(obj.getTitulo())) {
                     resp = true;
-                    i = ultimo;
                 }
             }
         }
@@ -905,53 +808,45 @@ class Lista {
 
     // Mostrar o elemento de todas as células
     public void mostrar() throws Exception {
-        if (primeiro == ultimo) {
-            throw new Exception("Lista se encontra vazia!");
+        if (topo == null) {
+            throw new Exception("Pilha se encontra vazia!");
         } else {
-            for (Celula i = primeiro.prox; i != null; i = i.prox) {
+            for (Celula i = topo; i.prox != null; i = i.prox) {
                 MyIO.println(i.elemento.toString());
             }
         }
     }
 
-    //Chama a recursão para imprimir o inverso
-    public void imprimirReverso() {
-        mostrarRec(primeiro.prox);
+    private int tam = 0;
+
+    // Chama a recursão para imprimir o inverso
+    public void imprimirReverso() throws Exception {
+        if (topo == null) {
+            throw new Exception("Pilha vazia!");
+        } else {
+            mostrarRec(topo);
+            MyIO.println();
+        }
     }
 
-    // Imprimir informações de todos os filmes cadastrados
+    // Imprimir informações de todos os filmes cadastrados --> inversamente
     public void imprimir() {
         int j = 0;
-        for (Celula tmp = primeiro.prox; tmp != null; tmp = tmp.prox, j++) {
+        for (Celula tmp = topo; tmp != null; tmp = tmp.prox, j++) {
             MyIO.print("[" + j + "] ");
             tmp.elemento.imprimir();
         }
         MyIO.println();
     }
 
-    // Função para mostrar os elementos de tras para frente da lista --> começar por
-    // primeiro.prox
-    public void mostrarRec(Celula i) {
+    // Função para mostrar os elementos de tras para frente da Pilha --> ordem
+    // correta para pilha
+    public void mostrarRec(Celula i) throws Exception {
         if (i != null) {
             mostrarRec(i.prox);
+            MyIO.print("[" + (tam++) + "] ");
             i.elemento.imprimir();
         }
-    }
-
-    // Uma versçao do remover do inicio que não remove o nó cabeça da lista e sim o
-    // elemento desejado
-    public Filme removerInicioDiff() throws Exception {
-        Filme resp = null;
-        if (primeiro == ultimo) {
-            throw new Exception("A lista se encontra vazia no momento!");
-        } else {
-            Celula tmp = primeiro.prox;
-            resp = tmp.elemento;
-            primeiro.prox = primeiro.prox.prox;
-            tmp.prox = null;
-            tmp = null;
-        }
-        return resp;
     }
 
 }
@@ -971,7 +866,7 @@ class Celula {
 
 }
 
-public class Tp3Q10 {
+public class Tp3Q11 {
 
     private static boolean isFim(String entrada) {
         return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
@@ -982,9 +877,9 @@ public class Tp3Q10 {
             ArrayList<String> entradas = new ArrayList<>();
             ArrayList<String> removes = new ArrayList<>();
             String verificacoes[];
-            Lista listaFilmes;
-            int n = 0, pos = 0;
-            String entrada = "", comando, aux = "";
+            Pilha pilhaFlex;
+            int n = 0;
+            String entrada = "", comando;
             MyIO.setCharset("UTF-8");
             do {
                 entrada = MyIO.readLine();
@@ -1000,51 +895,33 @@ public class Tp3Q10 {
             }
 
             // criação dos objetos de filme/leitura/impressao
-            listaFilmes = new Lista();
+            pilhaFlex = new Pilha();
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
-                listaFilmes.inserirFim(filme);
+                pilhaFlex.inserir(filme);
             }
 
-            // executando comandos da lista de acordo com a demanda
+            // executando comandos da pilha de acordo com a demanda
             for (int i = 0; i < n; i++) {
                 comando = verificacoes[i];
                 // System.out.println(comando);
-                if (Ferramentas.myContains(comando, "II")) {
-                    listaFilmes.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-                } else if (Ferramentas.myContains(comando, "IF")) {
-                    listaFilmes.inserirFim(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-                } else if (Ferramentas.myContains(comando, "I*")) {
-                    aux = Ferramentas.lerEntreSpaces(comando);
-                    pos = Integer.parseInt(aux);
-                    listaFilmes.inserir(new Filme(Ferramentas.mySubstring(comando, aux.length() + 4, comando.length())),
-                            pos);
-                } else if (Ferramentas.myContains(comando, "RI")) {
-                    removes.add(listaFilmes.removerInicio().getNome());
-                } else if (Ferramentas.myContains(comando, "RF")) {
-                    removes.add(listaFilmes.removerFim().getNome());
-                } else if (Ferramentas.myContains(comando, "R*")) {
-                    pos = Integer.parseInt(Ferramentas.lerEntreSpaces(comando));
-                    removes.add(listaFilmes.remover(pos).getNome());
+                if (Ferramentas.myContains(comando, "I")) {
+                    pilhaFlex.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
+                } else if (Ferramentas.myContains(comando, "R")) {
+                    removes.add(pilhaFlex.remover().getNome());
                 }
-                /*
-                 * System.out.println(
-                 * "----------------------------------------------------------------------");
-                 * System.out.println("COMANDO: "+comando);
-                 * listaFilmes.imprimir();
-                 * System.out.println(
-                 * "----------------------------------------------------------------------");
-                 */
             }
             // Printando resultados das inserções e remoções
             for (String name : removes) {
                 MyIO.println("(R) " + name);
             }
-            listaFilmes.imprimir();
-            /*Filme f = new Filme();
-            f.setTitulo("Gold");
-            System.out.println(listaFilmes.localizar(f));
-            System.out.println(listaFilmes.localizar(3).getNome());*/
+            pilhaFlex.imprimirReverso();
+            /*
+             * Filme f = new Filme();
+             * f.setTitulo("Jackass Forever");
+             * System.out.println(pilhaFlex.localizar(f));
+             * System.out.println(pilhaFlex.localizar(36).getNome());
+             */
         } catch (Exception e) {
             System.out.println("Um erro ocorreu durante a execução do código\n" +
                     "Erro reportado no main --> " + e.getMessage() + " -- " + e.getLocalizedMessage());
