@@ -717,7 +717,7 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        //file = new File("/tmp/filmes/" + name);
+        // file = new File("/tmp/filmes/" + name);
         file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
@@ -728,21 +728,21 @@ class Filme {
 
 }
 
-class Lista {
+class ListaDupla {
 
     private CelulaDupla primeiro, ultimo;
 
-    public Lista() {
+    public ListaDupla() {
         primeiro = new CelulaDupla();
         ultimo = primeiro;
     }
 
     // Inserir dentro da lista de filmes na última posição
     public void inserirFim(Filme obj) {
-        CelulaDupla tmp = new CelulaDupla(obj);
-        ultimo.prox = tmp;
+        ultimo.prox = new CelulaDupla(obj);
+        ultimo.prox.ant = ultimo;
         ultimo = ultimo.prox;
-        tmp = null;
+
     }
 
     /**
@@ -754,9 +754,12 @@ class Lista {
     public void inserirInicio(Filme fm) {
         CelulaDupla tmp = new CelulaDupla(fm);
         tmp.prox = primeiro.prox;
+        tmp.ant = primeiro;
         primeiro.prox = tmp;
         if (primeiro == ultimo) {
             ultimo = tmp;
+        } else {
+            tmp.prox.ant = tmp;
         }
         tmp = null;
     }
@@ -772,17 +775,18 @@ class Lista {
         int tam = tamanho();
         if (pos == 0) {
             inserirInicio(fm);
-        } else if (pos == tam - 1) {
+        } else if (pos == tam) {
             inserirFim(fm);
-        } else if (pos < 0 || pos >= tam) {
+        } else if (pos < 0 || pos > tam) {
             throw new Exception("Posição de inserção invalida - pos:" + pos + " size:" + tam);
         } else {
             CelulaDupla i = primeiro;
             for (int j = 0; j < pos; j++, i = i.prox)
                 ;
-            CelulaDupla tmp = i.prox;
-            i.prox = new CelulaDupla(fm);
-            i.prox.prox = tmp;
+            CelulaDupla tmp = new CelulaDupla(fm);
+            tmp.ant = i;
+            tmp.prox = i.prox;
+            tmp.ant.prox = tmp.prox.ant = tmp;
             tmp = i = null;
         }
     }
@@ -802,6 +806,7 @@ class Lista {
         resp = tmp.prox.elemento;
         primeiro = tmp.prox;
         tmp.prox = null;
+        primeiro.ant = null;
         tmp = null;
         return resp;
     }
@@ -816,13 +821,10 @@ class Lista {
         if (primeiro == ultimo) {
             throw new Exception("A lista esta vazia!");
         }
-        CelulaDupla i;
-        for (i = primeiro; i.prox != ultimo; i = i.prox)
-            ;
         resp = ultimo.elemento;
-        ultimo = i;
+        ultimo = ultimo.ant;
+        ultimo.prox.ant = null;
         ultimo.prox = null;
-        i = null;
         return resp;
     }
 
@@ -845,14 +847,14 @@ class Lista {
         } else if (pos == tamanho() - 1) {
             removerFim();
         } else {
-            CelulaDupla i = primeiro;
+            CelulaDupla i = primeiro.prox;
             for (int j = 0; j < pos; j++, i = i.prox)
                 ;
-            CelulaDupla tmp = i.prox;
-            resp = tmp.elemento;
-            i.prox = tmp.prox;
-            tmp.prox = null;
-            i = tmp = null;
+            i.ant.prox = i.prox;
+            i.prox.ant = i.ant;
+            resp = i.elemento;
+            i.prox = i.ant = null;
+            i = null;
         }
         return resp;
     }
@@ -906,7 +908,7 @@ class Lista {
     // Mostrar o elemento de todas as células
     public void mostrar() throws Exception {
         if (primeiro == ultimo) {
-            throw new Exception("Lista se encontra vazia!");
+            throw new Exception("ListaDupla se encontra vazia!");
         } else {
             for (CelulaDupla i = primeiro.prox; i != null; i = i.prox) {
                 MyIO.println(i.elemento.toString());
@@ -916,7 +918,12 @@ class Lista {
 
     // Chama a recursão para imprimir o inverso
     public void imprimirReverso() {
-        mostrarRec(primeiro.prox);
+        int j = tamanho() - 1;
+        for (CelulaDupla tmp = ultimo; tmp != primeiro; tmp = tmp.ant, j--) {
+            MyIO.print("[" + j + "] ");
+            tmp.elemento.imprimir();
+        }
+        MyIO.println();
     }
 
     // Imprimir informações de todos os filmes cadastrados
@@ -982,7 +989,7 @@ public class Tp3Q13 {
             ArrayList<String> entradas = new ArrayList<>();
             ArrayList<String> removes = new ArrayList<>();
             String verificacoes[];
-            Lista listaFilmes;
+            ListaDupla listaDupla;
             int n = 0, pos = 0;
             String entrada = "", comando, aux = "";
             MyIO.setCharset("UTF-8");
@@ -1000,52 +1007,54 @@ public class Tp3Q13 {
             }
 
             // criação dos objetos de filme/leitura/impressao
-            listaFilmes = new Lista();
+            listaDupla = new ListaDupla();
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
-                listaFilmes.inserirFim(filme);
+                listaDupla.inserirFim(filme);
             }
 
             // executando comandos da lista de acordo com a demanda
             for (int i = 0; i < n; i++) {
                 comando = verificacoes[i];
-                // System.out.println(comando);
+               // System.out.println(comando);
                 if (Ferramentas.myContains(comando, "II")) {
-                    listaFilmes.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
+                    listaDupla.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
                 } else if (Ferramentas.myContains(comando, "IF")) {
-                    listaFilmes.inserirFim(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
+                    listaDupla.inserirFim(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
                 } else if (Ferramentas.myContains(comando, "I*")) {
                     aux = Ferramentas.lerEntreSpaces(comando);
                     pos = Integer.parseInt(aux);
-                    listaFilmes.inserir(new Filme(Ferramentas.mySubstring(comando, aux.length() + 4, comando.length())),
+                    listaDupla.inserir(new Filme(Ferramentas.mySubstring(comando, aux.length() + 4, comando.length())),
                             pos);
                 } else if (Ferramentas.myContains(comando, "RI")) {
-                    removes.add(listaFilmes.removerInicio().getNome());
+                    removes.add(listaDupla.removerInicio().getNome());
                 } else if (Ferramentas.myContains(comando, "RF")) {
-                    removes.add(listaFilmes.removerFim().getNome());
+                    removes.add(listaDupla.removerFim().getNome());
                 } else if (Ferramentas.myContains(comando, "R*")) {
                     pos = Integer.parseInt(Ferramentas.lerEntreSpaces(comando));
-                    removes.add(listaFilmes.remover(pos).getNome());
+                    removes.add(listaDupla.remover(pos).getNome());
                 }
                 /*
                  * System.out.println(
                  * "----------------------------------------------------------------------");
-                 * System.out.println("COMANDO: "+comando);
-                 * listaFilmes.imprimir();
+                 * System.out.println("COMANDO: " + comando);
+                 * listaDupla.imprimir();
                  * System.out.println(
                  * "----------------------------------------------------------------------");
                  */
+
             }
             // Printando resultados das inserções e remoções
             for (String name : removes) {
                 MyIO.println("(R) " + name);
             }
-            listaFilmes.imprimir();
+            listaDupla.imprimir();
+           // listaDupla.imprimirReverso();
             /*
              * Filme f = new Filme();
              * f.setTitulo("Gold");
-             * System.out.println(listaFilmes.localizar(f));
-             * System.out.println(listaFilmes.localizar(3).getNome());
+             * System.out.println(listaDupla.localizar(f));
+             * System.out.println(listaDupla.localizar(3).getNome());
              */
         } catch (Exception e) {
             System.out.println("Um erro ocorreu durante a execução do código\n" +
