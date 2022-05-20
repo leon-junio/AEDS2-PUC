@@ -739,10 +739,14 @@ class ListaDupla {
 
     // Inserir dentro da lista de filmes na última posição
     public void inserirFim(Filme obj) {
-        ultimo.prox = new CelulaDupla(obj);
+        CelulaDupla tmp = new CelulaDupla(obj);
+        if (primeiro == ultimo) {
+            primeiro.prox = tmp;
+            tmp.ant = primeiro;
+        }
+        ultimo.prox = tmp;
         ultimo.prox.ant = ultimo;
         ultimo = ultimo.prox;
-
     }
 
     /**
@@ -753,8 +757,8 @@ class ListaDupla {
      */
     public void inserirInicio(Filme fm) {
         CelulaDupla tmp = new CelulaDupla(fm);
-        tmp.prox = primeiro.prox;
         tmp.ant = primeiro;
+        tmp.prox = primeiro.prox;
         primeiro.prox = tmp;
         if (primeiro == ultimo) {
             ultimo = tmp;
@@ -918,9 +922,7 @@ class ListaDupla {
 
     // Chama a recursão para imprimir o inverso
     public void imprimirReverso() {
-        int j = tamanho() - 1;
-        for (CelulaDupla tmp = ultimo; tmp != primeiro; tmp = tmp.ant, j--) {
-            MyIO.print("[" + j + "] ");
+        for (CelulaDupla tmp = ultimo; tmp != primeiro; tmp = tmp.ant) {
             tmp.elemento.imprimir();
         }
         MyIO.println();
@@ -962,18 +964,10 @@ class ListaDupla {
     }
 
     // Swap para listas duplamente encadeadas
-    public void swap(int esq, int dir) throws Exception {
-        CelulaDupla cel1 = localizarCel(esq);
-        CelulaDupla cel2 = localizarCel(dir);
-        CelulaDupla tmp = cel1;
-        cel1.ant = cel2.ant;
-        cel1.prox = cel2.prox;
-        cel2.ant.prox = cel1;
-        cel2.prox.ant = cel1;
-        cel2.ant = tmp.ant;
-        cel2.prox = tmp.prox;
-        tmp.ant.prox = cel2;
-        tmp.prox.ant = cel2;
+    public void swap(CelulaDupla cel1, CelulaDupla cel2) throws Exception {
+        Filme tmp = cel1.elemento;
+        cel1.elemento = cel2.elemento;
+        cel2.elemento = tmp;
         tmp = null;
     }
 
@@ -1001,29 +995,25 @@ class ListaDupla {
     // QUICKSORT MODIFICADO PARA LISTAS DUPLAMENTE ENCADEADAS
     public void quickSort(int esq, int dir) throws Exception {
         int meio = (esq + dir) / 2;
-        CelulaDupla pivo = primeiro, celd = primeiro, cele = ultimo;
-        for (int i = 0; i < meio; pivo = pivo.prox)
-            ;
-        pivo = pivo.prox;
+        CelulaDupla pivo, cele = localizarCel(esq), celd = localizarCel(dir);
+        pivo = localizarCel(meio);
         int i = esq, j = dir;
-        mov += 7;
-        comp++;
-        if (!localizarCel(i).elemento.getSituacao().equals(localizarCel(j).elemento.getSituacao())
-                && !localizarCel(i).elemento.getSituacao().equals(pivo.elemento.getSituacao())) {
-            while (i <= j) {
-                while (cele.elemento.getSituacao().compareTo(pivo.elemento.getSituacao()) < 0) {
-                    i++;
-                }
-                while (celd.elemento.getSituacao().compareTo(pivo.elemento.getSituacao()) > 0) {
-                    j++;
-                }
-                comp++;
-                if (i <= j) {
-                    swap(i, j);
-                    mov += 9;
-                    i++;
-                    j--;
-                }
+        mov += 6;
+        while (i <= j) {
+            while (cele.elemento.getSituacao().compareTo(pivo.elemento.getSituacao()) < 0) {
+                i++;
+                cele = cele.prox;
+            }
+            while (celd.elemento.getSituacao().compareTo(pivo.elemento.getSituacao()) > 0) {
+                j--;
+                celd = celd.ant;
+            }
+            comp++;
+            if (i <= j) {
+                swap(cele, celd);
+                mov += 2;
+                i++;
+                j--;
             }
         }
         comp++;
@@ -1089,13 +1079,10 @@ public class Tp3Q13 {
     public static void main(String[] args) {
         try {
             ArrayList<String> entradas = new ArrayList<>();
-            ArrayList<String> removes = new ArrayList<>();
-            String verificacoes[];
             ListaDupla listaDupla;
-            int n = 0, pos = 0;
             double fim, inic;
             int comp = 0, mov = 0;
-            String entrada = "", comando, aux = "";
+            String entrada = "";
             MyIO.setCharset("UTF-8");
             do {
                 entrada = MyIO.readLine();
@@ -1103,54 +1090,12 @@ public class Tp3Q13 {
                     entradas.add(entrada);
                 }
             } while (!isFim(entrada));
-            n = MyIO.readInt();
-            verificacoes = new String[n];
-            // salvando comandos de verificação para serem executados
-            for (int i = 0; i < n; i++) {
-                verificacoes[i] = entrada = MyIO.readLine();
-            }
 
             // criação dos objetos de filme/leitura/impressao
             listaDupla = new ListaDupla();
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
-                listaDupla.inserirFim(filme);
-            }
-
-            // executando comandos da lista de acordo com a demanda
-            for (int i = 0; i < n; i++) {
-                comando = verificacoes[i];
-                // System.out.println(comando);
-                if (Ferramentas.myContains(comando, "II")) {
-                    listaDupla.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-                } else if (Ferramentas.myContains(comando, "IF")) {
-                    listaDupla.inserirFim(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
-                } else if (Ferramentas.myContains(comando, "I*")) {
-                    aux = Ferramentas.lerEntreSpaces(comando);
-                    pos = Integer.parseInt(aux);
-                    listaDupla.inserir(new Filme(Ferramentas.mySubstring(comando, aux.length() + 4, comando.length())),
-                            pos);
-                } else if (Ferramentas.myContains(comando, "RI")) {
-                    removes.add(listaDupla.removerInicio().getNome());
-                } else if (Ferramentas.myContains(comando, "RF")) {
-                    removes.add(listaDupla.removerFim().getNome());
-                } else if (Ferramentas.myContains(comando, "R*")) {
-                    pos = Integer.parseInt(Ferramentas.lerEntreSpaces(comando));
-                    removes.add(listaDupla.remover(pos).getNome());
-                }
-                /*
-                 * System.out.println(
-                 * "----------------------------------------------------------------------");
-                 * System.out.println("COMANDO: " + comando);
-                 * listaDupla.imprimir();
-                 * System.out.println(
-                 * "----------------------------------------------------------------------");
-                 */
-
-            }
-            // Printando resultados das inserções e remoções
-            for (String name : removes) {
-                MyIO.println("(R) " + name);
+                listaDupla.inserirInicio(filme);
             }
             inic = listaDupla.now();
             listaDupla.quickSort(0, entradas.size() - 1);
@@ -1158,7 +1103,7 @@ public class Tp3Q13 {
             mov += listaDupla.getMovimentacoes();
             fim = listaDupla.now();
             Ferramentas.gerarLog(inic, fim, comp, mov, "quicksort2");
-            listaDupla.imprimir();
+            listaDupla.imprimirReverso();
             // listaDupla.imprimirReverso();
             /*
              * Filme f = new Filme();
