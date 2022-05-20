@@ -961,6 +961,108 @@ class ListaDupla {
         return resp;
     }
 
+    // Swap para listas duplamente encadeadas
+    public void swap(int esq, int dir) throws Exception {
+        CelulaDupla cel1 = localizarCel(esq);
+        CelulaDupla cel2 = localizarCel(dir);
+        CelulaDupla tmp = cel1;
+        cel1.ant = cel2.ant;
+        cel1.prox = cel2.prox;
+        cel2.ant.prox = cel1;
+        cel2.prox.ant = cel1;
+        cel2.ant = tmp.ant;
+        cel2.prox = tmp.prox;
+        tmp.ant.prox = cel2;
+        tmp.prox.ant = cel2;
+        tmp = null;
+    }
+
+    // forma de localizar celulas em uma lista duplamente encadeada
+    public CelulaDupla localizarCel(int pos) throws Exception {
+        CelulaDupla resp = null;
+        int tam = tamanho();
+        if (primeiro == ultimo) {
+            throw new Exception("A lista se encontra vazia!");
+        } else if (pos == 0) {
+            resp = primeiro.prox;
+        } else if (pos == tam) {
+            resp = ultimo;
+        } else if (pos < 0 || pos > tam) {
+            throw new Exception("Posição para busca inválida na lista!");
+        } else {
+            CelulaDupla tmp = primeiro;
+            for (int i = 0; i < pos; i++, tmp = tmp.prox)
+                ;
+            resp = tmp.prox;
+        }
+        return resp;
+    }
+
+    // QUICKSORT MODIFICADO PARA LISTAS DUPLAMENTE ENCADEADAS
+    public void quickSort(int esq, int dir) throws Exception {
+        int meio = (esq + dir) / 2;
+        CelulaDupla pivo = primeiro, celd = primeiro, cele = ultimo;
+        for (int i = 0; i < meio; pivo = pivo.prox)
+            ;
+        pivo = pivo.prox;
+        int i = esq, j = dir;
+        mov += 7;
+        comp++;
+        if (!localizarCel(i).elemento.getSituacao().equals(localizarCel(j).elemento.getSituacao())
+                && !localizarCel(i).elemento.getSituacao().equals(pivo.elemento.getSituacao())) {
+            while (i <= j) {
+                while (cele.elemento.getSituacao().compareTo(pivo.elemento.getSituacao()) < 0) {
+                    i++;
+                }
+                while (celd.elemento.getSituacao().compareTo(pivo.elemento.getSituacao()) > 0) {
+                    j++;
+                }
+                comp++;
+                if (i <= j) {
+                    swap(i, j);
+                    mov += 9;
+                    i++;
+                    j--;
+                }
+            }
+        }
+        comp++;
+        if (esq < j) {
+            quickSort(esq, j);
+        }
+        comp++;
+        if (i < dir) {
+            quickSort(i, dir);
+        }
+    }
+
+    /**
+     * Retorna o timestamp atual
+     * 
+     * @return timestamp atual
+     */
+    public long now() {
+        return new Date().getTime();
+    }
+
+    private int comp, mov;
+
+    public int getMovimentacoes() {
+        return mov;
+    }
+
+    public void setMov(int mov) {
+        this.mov = mov;
+    }
+
+    public void setComp(int comp) {
+        this.comp = comp;
+    }
+
+    public int getComparacoes() {
+        return this.comp;
+    }
+
 }
 
 class CelulaDupla {
@@ -991,6 +1093,8 @@ public class Tp3Q13 {
             String verificacoes[];
             ListaDupla listaDupla;
             int n = 0, pos = 0;
+            double fim, inic;
+            int comp = 0, mov = 0;
             String entrada = "", comando, aux = "";
             MyIO.setCharset("UTF-8");
             do {
@@ -1016,7 +1120,7 @@ public class Tp3Q13 {
             // executando comandos da lista de acordo com a demanda
             for (int i = 0; i < n; i++) {
                 comando = verificacoes[i];
-               // System.out.println(comando);
+                // System.out.println(comando);
                 if (Ferramentas.myContains(comando, "II")) {
                     listaDupla.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
                 } else if (Ferramentas.myContains(comando, "IF")) {
@@ -1048,8 +1152,14 @@ public class Tp3Q13 {
             for (String name : removes) {
                 MyIO.println("(R) " + name);
             }
+            inic = listaDupla.now();
+            listaDupla.quickSort(0, entradas.size() - 1);
+            comp += listaDupla.getComparacoes();
+            mov += listaDupla.getMovimentacoes();
+            fim = listaDupla.now();
+            Ferramentas.gerarLog(inic, fim, comp, mov, "quicksort2");
             listaDupla.imprimir();
-           // listaDupla.imprimirReverso();
+            // listaDupla.imprimirReverso();
             /*
              * Filme f = new Filme();
              * f.setTitulo("Gold");
