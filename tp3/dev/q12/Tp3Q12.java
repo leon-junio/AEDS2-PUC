@@ -717,7 +717,7 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        //file = new File("/tmp/filmes/" + name);
+        // file = new File("/tmp/filmes/" + name);
         file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
@@ -740,7 +740,7 @@ class Fila {
     public Fila(int num) {
         ultimo = 0;
         primeiro = 0;
-        limite = num+1;
+        limite = num + 1;
         celFirst = new Celula();
         celLast = celFirst;
     }
@@ -794,28 +794,25 @@ class Fila {
         return resp;
     }
 
-    /*
-     * Localizar filme dentro da fila baseado na sua posição
-     * public Filme localizar(int pos) throws Exception {
-     * Filme resp = null;
-     * int tam = tamanho();
-     * if (primeiro == ultimo) {
-     * throw new Exception("A fila se encontra vazia!");
-     * } else if (pos == 0) {
-     * resp = celFirst.prox.elemento;
-     * } else if (pos == tam - 1) {
-     * resp = celLast.elemento;
-     * } else if (pos < 0 || pos >= tam) {
-     * throw new Exception("Posição para busca inválida na fila!");
-     * } else {
-     * Celula i = primeiro;
-     * for (int j = 0; j < pos; i = i.prox, j++)
-     * ;
-     * resp = i.prox.elemento;
-     * }
-     * return resp;
-     * }
-     */
+    public Filme localizar(int pos) throws Exception {
+        Filme resp = null;
+        int tam = tamanho();
+        if (primeiro == ultimo) {
+            throw new Exception("A fila se encontra vazia!");
+        } else if (pos == 0) {
+            resp = celFirst.prox.elemento;
+        } else if (pos == tam - 1) {
+            resp = celLast.elemento;
+        } else if (pos < 0 || pos >= tam) {
+            throw new Exception("Posição para busca inválida na fila!");
+        } else {
+            Celula i = celFirst;
+            for (int j = 0; j < pos; i = i.prox, j++)
+                ;
+            resp = i.prox.elemento;
+        }
+        return resp;
+    }
 
     /*
      * Localizar objeto de filme dentro da fila
@@ -835,7 +832,6 @@ class Fila {
      * }
      */
 
-    // Imprimir informações de todos os filmes cadastrados
     // Imprimir informações de todos os filmes cadastrados
     public void imprimir() {
         Celula cel = celFirst.prox;
@@ -894,14 +890,14 @@ public class Tp3Q12 {
             // criação dos objetos de filme/leitura/impressao
             fila = new Fila();
             for (String ent : entradas) {
-				Filme filme = new Filme(ent);
-				try {
-					fila.inserir(filme);
-				} catch (Exception e) {
-					fila.remover();
-					fila.inserir(filme);
-				}
-			}
+                Filme filme = new Filme(ent);
+                try {
+                    fila.inserir(filme);
+                } catch (Exception e) {
+                    fila.remover();
+                    fila.inserir(filme);
+                }
+            }
 
             // executando comandos da fila de acordo com a demanda
             for (int i = 0; i < n; i++) {
