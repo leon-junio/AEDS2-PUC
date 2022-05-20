@@ -717,8 +717,8 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        file = new File("/tmp/filmes/" + name);
-        //file = new File("../tmp/filmes/" + name);
+        //file = new File("/tmp/filmes/" + name);
+        file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
@@ -731,9 +731,9 @@ class Filme {
 class Fila {
 
     private Celula celFirst, celLast;
-    private int primeiro, ultimo,limite;
+    private int primeiro, ultimo, limite;
 
-    public Fila(){
+    public Fila() {
         this(5);
     }
 
@@ -745,135 +745,106 @@ class Fila {
         celLast = celFirst;
     }
 
+    // INSERÇÃO SEGUINDO O MODELO DE FIFO DA FILA
     public void inserir(Filme fm) throws Exception {
-        int tam = tamanho();
-		if (((ultimo + 1) % tam) == primeiro) {
-			throw new Exception("Erro interno --> Fila Cheia");
-		}
-		filmes[ultimo] = fm;
-		ultimo = (ultimo + 1) % tam;
-		MyIO.println(Math.round(calcMedia()));
-	}
+        if (((ultimo + 1) % limite) == primeiro) {
+            throw new Exception("Erro interno --> Fila Cheia");
+        }
+        Celula novo = new Celula(fm);
+        celLast.prox = novo;
+        celLast = celLast.prox;
+        ultimo = (ultimo + 1) % limite;
+        MyIO.println(Math.round(calcMedia()));
+    }
 
-	// remover valores da fila circular
-	public Filme remover() throws Exception {
-        int tam = tamanho();
-		Filme aux = null;
-		if (primeiro == ultimo) {
-			throw new Exception("Erro interno --> Fila Vazia");
-		}
-		aux = filmes[primeiro].clonar();
-		primeiro = (primeiro + 1) % filmes.length;
-		return aux;
-	}
+    // remover valores da fila circular
+    public Filme remover() throws Exception {
+        Filme aux = null;
+        if (primeiro == ultimo) {
+            throw new Exception("Erro interno --> Fila Vazia");
+        }
+        Celula tmp = celFirst;
+        aux = tmp.prox.elemento.clonar();
+        celFirst = tmp.prox;
+        tmp.prox = null;
+        tmp = null;
+        primeiro = (primeiro + 1) % limite;
+        return aux;
+    }
 
-    //calcular media da fila
+    // calcular media da fila
     public float calcMedia() {
-		float resp = 0;
-		int count = 0;
-		for (int j = primeiro; j != ultimo; j = (j + 1) % filmes.length) {
-			resp += filmes[j].getDuracao();
-			count++;
-		}
-		resp = resp / count;
-		return resp;
-	}
+        float resp = 0;
+        int count = 0;
+        Celula cel = celFirst.prox;
+        for (int j = primeiro; j != ultimo; j = (j + 1) % limite, cel = cel.prox) {
+            resp += cel.elemento.getDuracao();
+            count++;
+        }
+        resp = resp / count;
+        return resp;
+    }
 
-    // retornar o tamanho da lista dinamica no momento
+    // retornar o tamanho da fila dinamica no momento
     public int tamanho() {
         int resp = 0;
-        for (Celula tmp = primeiro; tmp != ultimo; tmp = tmp.prox) {
+        for (Celula tmp = celFirst; tmp != celLast; tmp = tmp.prox) {
             resp++;
         }
         return resp;
     }
 
-    // Localizar filme dentro da lista baseado na sua posição
-    public Filme localizar(int pos) throws Exception {
-        Filme resp = null;
-        int tam = tamanho();
-        if (primeiro == ultimo) {
-            throw new Exception("A lista se encontra vazia!");
-        } else if (pos == 0) {
-            resp = primeiro.prox.elemento;
-        } else if (pos == tam - 1) {
-            resp = ultimo.elemento;
-        } else if (pos < 0 || pos >= tam) {
-            throw new Exception("Posição para busca inválida na lista!");
-        } else {
-            Celula i = primeiro;
-            for (int j = 0; j < pos; i = i.prox, j++)
-                ;
-            resp = i.prox.elemento;
-        }
-        return resp;
-    }
+    /*
+     * Localizar filme dentro da fila baseado na sua posição
+     * public Filme localizar(int pos) throws Exception {
+     * Filme resp = null;
+     * int tam = tamanho();
+     * if (primeiro == ultimo) {
+     * throw new Exception("A fila se encontra vazia!");
+     * } else if (pos == 0) {
+     * resp = celFirst.prox.elemento;
+     * } else if (pos == tam - 1) {
+     * resp = celLast.elemento;
+     * } else if (pos < 0 || pos >= tam) {
+     * throw new Exception("Posição para busca inválida na fila!");
+     * } else {
+     * Celula i = primeiro;
+     * for (int j = 0; j < pos; i = i.prox, j++)
+     * ;
+     * resp = i.prox.elemento;
+     * }
+     * return resp;
+     * }
+     */
 
-    // Localizar objeto de filme dentro da lista
-    public boolean localizar(Filme obj) throws Exception {
-        boolean resp = false;
-        if (primeiro == ultimo) {
-            throw new Exception("A lista se encontra vazia!");
-        } else {
-            for (Celula i = primeiro.prox; i != null; i = i.prox) {
-                if (i.elemento.getTitulo().equals(obj.getTitulo())) {
-                    resp = true;
-                    i = ultimo;
-                }
-            }
-        }
-        return resp;
-    }
-
-    // Mostrar o elemento de todas as células
-    public void mostrar() throws Exception {
-        if (primeiro == ultimo) {
-            throw new Exception("Fila se encontra vazia!");
-        } else {
-            for (Celula i = primeiro.prox; i != null; i = i.prox) {
-                MyIO.println(i.elemento.toString());
-            }
-        }
-    }
-
-    //Chama a recursão para imprimir o inverso
-    public void imprimirReverso() {
-        mostrarRec(primeiro.prox);
-    }
+    /*
+     * Localizar objeto de filme dentro da fila
+     * public boolean localizar(Filme obj) throws Exception {
+     * boolean resp = false;
+     * if (primeiro == ultimo) {
+     * throw new Exception("A fila se encontra vazia!");
+     * } else {
+     * for (Celula i = primeiro.prox; i != null; i = i.prox) {
+     * if (i.elemento.getTitulo().equals(obj.getTitulo())) {
+     * resp = true;
+     * i = ultimo;
+     * }
+     * }
+     * }
+     * return resp;
+     * }
+     */
 
     // Imprimir informações de todos os filmes cadastrados
+    // Imprimir informações de todos os filmes cadastrados
     public void imprimir() {
-        int j = 0;
-        for (Celula tmp = primeiro.prox; tmp != null; tmp = tmp.prox, j++) {
-            MyIO.print("[" + j + "] ");
-            tmp.elemento.imprimir();
+        Celula cel = celFirst.prox;
+        int i = 0;
+        for (int j = primeiro; j != ultimo; j = (j + 1) % limite, cel = cel.prox) {
+            MyIO.print("[" + i++ + "] ");
+            cel.elemento.imprimir();
         }
         MyIO.println();
-    }
-
-    // Função para mostrar os elementos de tras para frente da lista --> começar por
-    // primeiro.prox
-    public void mostrarRec(Celula i) {
-        if (i != null) {
-            mostrarRec(i.prox);
-            i.elemento.imprimir();
-        }
-    }
-
-    // Uma versçao do remover do inicio que não remove o nó cabeça da lista e sim o
-    // elemento desejado
-    public Filme removerInicioDiff() throws Exception {
-        Filme resp = null;
-        if (primeiro == ultimo) {
-            throw new Exception("A lista se encontra vazia no momento!");
-        } else {
-            Celula tmp = primeiro.prox;
-            resp = tmp.elemento;
-            primeiro.prox = primeiro.prox.prox;
-            tmp.prox = null;
-            tmp = null;
-        }
-        return resp;
     }
 
 }
@@ -902,11 +873,10 @@ public class Tp3Q12 {
     public static void main(String[] args) {
         try {
             ArrayList<String> entradas = new ArrayList<>();
-            ArrayList<String> removes = new ArrayList<>();
             String verificacoes[];
             Fila fila;
-            int n = 0, pos = 0;
-            String entrada = "", comando, aux = "";
+            int n = 0;
+            String entrada = "", comando;
             MyIO.setCharset("UTF-8");
             do {
                 entrada = MyIO.readLine();
@@ -924,30 +894,37 @@ public class Tp3Q12 {
             // criação dos objetos de filme/leitura/impressao
             fila = new Fila();
             for (String ent : entradas) {
-                Filme filme = new Filme(ent);
-                fila.inserirFim(filme);
-            }
-
-            // executando comandos da lista de acordo com a demanda
-            for (int i = 0; i < n; i++) {
-				comando = verificacoes[i];
-				// System.out.println(comando);
-				if (Ferramentas.myContains(comando, "I")) {
-					try {
-						fila.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
-					} catch (Exception e) {
-						fila.remover();
-						fila.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
-					}
-				} else if (Ferramentas.myContains(comando, "R")) {
-					MyIO.println("(R) " + fila.remover().getNome());
+				Filme filme = new Filme(ent);
+				try {
+					fila.inserir(filme);
+				} catch (Exception e) {
+					fila.remover();
+					fila.inserir(filme);
 				}
 			}
+
+            // executando comandos da fila de acordo com a demanda
+            for (int i = 0; i < n; i++) {
+                comando = verificacoes[i];
+                // System.out.println(comando);
+                if (Ferramentas.myContains(comando, "I")) {
+                    try {
+                        fila.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
+                    } catch (Exception e) {
+                        fila.remover();
+                        fila.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
+                    }
+                } else if (Ferramentas.myContains(comando, "R")) {
+                    MyIO.println("(R) " + fila.remover().getNome());
+                }
+            }
             fila.imprimir();
-            /*Filme f = new Filme();
-            f.setTitulo("Gold");
-            System.out.println(fila.localizar(f));
-            System.out.println(fila.localizar(3).getNome());*/
+            /*
+             * Filme f = new Filme();
+             * f.setTitulo("Gold");
+             * System.out.println(fila.localizar(f));
+             * System.out.println(fila.localizar(3).getNome());
+             */
         } catch (Exception e) {
             System.out.println("Um erro ocorreu durante a execução do código\n" +
                     "Erro reportado no main --> " + e.getMessage() + " -- " + e.getLocalizedMessage());
