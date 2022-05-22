@@ -103,6 +103,8 @@ class Matriz {
             resp.insert(result);
             tmpa = null;
             tmpb = null;
+            celi = null;
+            celj = null;
         } else {
             throw new Exception("Erro ao tentar somar devido a diferença de tamanho entre as matrizes");
         }
@@ -120,8 +122,12 @@ class Matriz {
             for (int l = 0; l < linha; l++, tmpa = tmpa.inf) {
                 celi = tmpa;
                 celj = tmpb;
-                for (int c = 1; c <= coluna; c++, celi = celi.dir, celj = celj.dir) {
-                    result[i] = celi.elemento * celj.elemento;
+                for (int c = 1; c <= coluna; c++, celj = celj.dir) {
+                    Celula tmp = celj;
+                    for (int j = 1; j <= coluna; j++, tmp = tmp.inf) {
+                        result[i] += celi.elemento * tmp.elemento;
+                        celi = celi.dir;
+                    }
                     i++;
                     celi = tmpa;
                 }
@@ -129,6 +135,8 @@ class Matriz {
             resp.insert(result);
             tmpa = null;
             tmpb = null;
+            celi = null;
+            celj = null;
         } else {
             throw new Exception("Erro ao tentar multiplicar devido a diferença de tamanho entre as matrizes");
         }
