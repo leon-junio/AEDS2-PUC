@@ -92,6 +92,7 @@ class Matriz {
             Celula tmpb = m.inicio.dir;
             int[] result = new int[this.linha * this.coluna];
             int i = 0;
+            // Somando cada numero em cada index igual da matriz 1 e 2
             for (int l = 0; l < this.linha; l++, tmpa = tmpa.inf, tmpb = tmpb.inf) {
                 celi = tmpa;
                 celj = tmpb;
@@ -111,6 +112,7 @@ class Matriz {
         return resp;
     }
 
+    // Multiplicação entre matrizes - custo elevado para realizar essa operação
     public Matriz multiplicacao(Matriz m) throws Exception {
         Matriz resp = null;
         if (this.linha == m.linha && this.coluna == m.coluna) {
@@ -119,11 +121,16 @@ class Matriz {
             Celula tmpb = m.inicio.dir;
             int[] result = new int[this.linha * this.coluna];
             int i = 0;
+            // percorrer as linhas para poder fazer as multiplicações por colunas
             for (int l = 0; l < linha; l++, tmpa = tmpa.inf) {
                 celi = tmpa;
                 celj = tmpb;
+                // para cada coluna percorro as linhas debaixo para cima
+                // andando para direita
                 for (int c = 1; c <= coluna; c++, celj = celj.dir) {
                     Celula tmp = celj;
+                    // andando para baixo nas colunas e multiplicando linhas da matriz 1 por colunas
+                    // da matriz 2 e guardando resultado em um vetor de inteiros
                     for (int j = 1; j <= coluna; j++, tmp = tmp.inf) {
                         result[i] += celi.elemento * tmp.elemento;
                         celi = celi.dir;
@@ -132,6 +139,7 @@ class Matriz {
                     celi = tmpa;
                 }
             }
+            // inserindo os resultados da multiplicação dentro da matriz gerada
             resp.insert(result);
             tmpa = null;
             tmpb = null;
@@ -147,8 +155,8 @@ class Matriz {
         return (this.linha == this.coluna);
     }
 
+    // Função para mostrar a diagonal principal da matriz atual
     public void mostrarDiagonalPrincipal() throws Exception {
-        MyIO.println("PRIN");
         if (isQuadrada() == true) {
             Celula tmp = this.inicio;
             for (int j = 0; j < this.coluna; j++, tmp = tmp.inf) {
@@ -161,8 +169,8 @@ class Matriz {
         }
     }
 
+    // Função para mostrar a diagonal secundaria da matriz atual
     public void mostrarDiagonalSecundaria() throws Exception {
-        MyIO.println("SEC");
         if (isQuadrada() == true) {
             Celula tmp = this.inicio;
             for (int l = 0; l < this.linha; l++, tmp = tmp.dir)
@@ -177,10 +185,10 @@ class Matriz {
         }
     }
 
+    // Função para imprimir detalhadamente os dados da matriz
     public void print() {
         Celula tmp = this.inicio.dir;
         Celula j;
-        System.out.println("print");
         for (int l = 0; l < this.linha; l++, tmp = tmp.inf) {
             j = tmp;
             for (int c = 1; c <= this.coluna; c++, j = j.dir) {
@@ -196,11 +204,11 @@ public class Tp3Q16 {
     public static void main(String[] args) {
         int num = MyIO.readInt(), index = 0;
         Matriz mat_a, mat_b;
+        // Rodando e executando os casos de uso
         try {
             while (index < num) {
                 mat_a = gerarMatriz();
                 mat_b = gerarMatriz();
-                System.out.println("start -----");
                 mat_a.mostrarDiagonalPrincipal();
                 mat_a.mostrarDiagonalSecundaria();
                 mat_a.soma(mat_b).print();
@@ -215,6 +223,7 @@ public class Tp3Q16 {
         }
     }
 
+    // Função que gera e retorna uma matriz já preenchida para o main
     public static Matriz gerarMatriz() throws Exception {
         int l = 0, c = 0;
         ArrayList<Integer> listNums = new ArrayList<>();
@@ -226,8 +235,8 @@ public class Tp3Q16 {
                 listNums.add(MyIO.readInt());
             }
         }
+        // inserindo os numeros lidos dentro da matriz de inteiros
         matriz.insert(listNums);
-        matriz.print();
         return matriz;
     }
 
