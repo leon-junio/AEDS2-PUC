@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <dirent.h>
+#include <time.h>
 // BIBLIOTECAS USADAS PARA REALIZAÇÃO DESSA ATIVIDADE
 
 // CONSTANTE DE TAMANHO MÁXIMO DE STRING E ARRAYS DE CHAR
@@ -29,6 +30,7 @@ typedef struct Celula
 {
     Filme elemento;      // Elemento inserido na celula.
     struct Celula *prox; // Aponta a celula prox.
+    struct Celula *ant;  // Aponta a celula ant.
 } Celula;
 
 Celula *novaCelula(Filme elemento)
@@ -36,16 +38,43 @@ Celula *novaCelula(Filme elemento)
     Celula *nova = (Celula *)malloc(sizeof(Celula));
     nova->elemento = elemento;
     nova->prox = NULL;
+    nova->ant = NULL;
     return nova;
 }
 
 int n, MAXTAM;
-Celula *topo;
+Celula *primeiro, *ultimo;
 
 void start()
 {
     // gerando lista de filmes em C
-    topo = NULL;
+    Filme f;
+    primeiro = novaCelula(f);
+    ultimo = primeiro;
+}
+
+void gerarLog(double tempo)
+{
+    FILE *file;
+    char *buffer = (char *)malloc(sizeof(char) * STRMAX);
+    char *cp = (char *)malloc(sizeof(char) * STRMAX);
+    char *mv = (char *)malloc(sizeof(char) * STRMAX);
+    sprintf(mv, "%d", mov);
+    sprintf(cp, "%d", comp);
+    sprintf(buffer, "%f", tempo);
+    file = fopen("1369371_quicksort2.txt", "w");
+    fputs("1369371", file);
+    fputs("\t", file);
+    fputs(cp, file);
+    fputs("\t", file);
+    fputs(mv, file);
+    fputs("\t", file);
+    fputs(buffer, file);
+    fputs("\t", file);
+    fclose(file);
+    free(buffer);
+    free(cp);
+    free(mv);
 }
 
 // Metodo de comparação de duas char*s e retorna sua igualdade em forma de
@@ -343,6 +372,40 @@ char *removeTags(char *line)
             {
                 resp[pos] = line[i];
                 pos++;
+            }
+        }
+    }
+    return resp;
+}
+
+// Função que checa se uma String é antes ou depois de outra String
+// Gerando assim uma verificação de ordem alfabética
+// frase --> String que vai ser comparada com outra
+// ver --> String que vai ser usada como comparação
+bool isStrMaior(char frase[STRMAX], char ver[STRMAX])
+{
+    bool resp = false;
+    for (int i = 0; i < strlen(ver); i++)
+    {
+        if (frase[i] < ver[i])
+        {
+            resp = false;
+            i = strlen(ver);
+        }
+        else if (frase[i] > ver[i])
+        {
+            resp = true;
+            i = strlen(ver);
+        }
+        else if (i == strlen(ver))
+        {
+            if (strlen(ver) == strlen(frase))
+            {
+                resp = false;
+            }
+            else
+            {
+                resp = true;
             }
         }
     }
@@ -695,14 +758,6 @@ Filme ler(Filme filme, char *entrada)
     return filme;
 }
 
-int tamanho()
-{
-    int resp = 0;
-    for (Celula *tmp = topo; tmp != NULL; tmp = tmp->prox, resp++)
-        ;
-    return resp;
-}
-
 void imprimir(Filme filme)
 {
     printf("%s ", filme.nome);
@@ -725,59 +780,290 @@ void imprimir(Filme filme)
     printf("]\n");
 }
 
-// CONSTRUIR PILHA AQUI
+// CONSTRUIR LISTA AQUI
 
 /**
- * Insere elemento na pilha (politica FILO).
- * @param x int elemento a inserir.
+ * Insere um elemento na primeira posicao da lista.
+ * @param x int elemento a ser inserido.
  */
-void inserir(Filme x)
+void inserirInicio(Filme x)
 {
     Celula *tmp = novaCelula(x);
-    tmp->prox = topo;
-    topo = tmp;
+    tmp->ant = primeiro;
+    tmp->prox = primeiro->prox;
+    primeiro->prox = tmp;
+    if (primeiro == ultimo)
+    {
+        ultimo = tmp;
+    }
+    else
+    {
+        tmp->prox->ant = tmp;
+    }
     tmp = NULL;
 }
 
 /**
- * Remove elemento da pilha (politica FILO).
- * @return Elemento removido.
+ * Insere um elemento na ultima posicao da lista.
+ * @param x int elemento a ser inserido.
  */
-Filme remover()
+void inserirFim(Filme x)
 {
-    if (topo == NULL)
+    ultimo->prox = novaCelula(x);
+    ultimo->prox->ant = ultimo;
+    ultimo = ultimo->prox;
+}
+
+/**
+ * Remove um elemento da primeira posicao da lista.
+ * @return resp int elemento a ser removido.
+ */
+Filme removerInicio()
+{
+    if (primeiro == ultimo)
     {
-        printf("ERRO AO TENTAR REMOVER DA PILHA\n");
-        exit(1);
+        printf("Erro ao remover (vazia)!");
     }
 
-    Filme resp = topo->elemento;
-    Celula *tmp = topo;
-    topo = topo->prox;
-    tmp->prox = NULL;
+    Celula *tmp = primeiro;
+    primeiro = primeiro->prox;
+    Filme resp = primeiro->elemento;
+    tmp->prox = primeiro->ant = NULL;
     free(tmp);
     tmp = NULL;
     return resp;
 }
 
-void mostrarRec(Celula *i, int n)
+/**
+ * Remove um elemento da ultima posicao da lista.
+ * @return resp int elemento a ser removido.
+ */
+Filme removerFim()
 {
-    if (i != NULL)
+    if (primeiro == ultimo)
     {
-        n--;
-        mostrarRec(i->prox, n);
-        printf("[%d] ", n + 1);
+        printf("Erro ao remover (vazia)!");
+    }
+    Filme resp = ultimo->elemento;
+    ultimo = ultimo->ant;
+    ultimo->prox->ant = NULL;
+    free(ultimo->prox);
+    ultimo->prox = NULL;
+    return resp;
+}
+
+/**
+ *  Calcula e retorna o tamanho, em numero de elementos, da lista.
+ *  @return resp int tamanho
+ */
+int tamanho()
+{
+    int tamanho = 0;
+    Celula *i;
+    for (i = primeiro; i != ultimo; i = i->prox, tamanho++)
+        ;
+    return tamanho;
+}
+
+/**
+ * Insere um elemento em uma posicao especifica considerando que o
+ * primeiro elemento valido esta na posicao 0.
+ * @param x int elemento a ser inserido.
+ * @param pos int posicao da insercao.
+ * @throws Exception Se <code>posicao</code> invalida.
+ */
+void inserir(Filme x, int pos)
+{
+    int tam = tamanho();
+    if (pos < 0 || pos > tam)
+    {
+        printf("Erro ao remover (posicao %d/%d invalida!", pos, tam);
+    }
+    else if (pos == 0)
+    {
+        inserirInicio(x);
+    }
+    else if (pos == tam)
+    {
+        inserirFim(x);
+    }
+    else
+    {
+        // Caminhar ate a posicao anterior a insercao
+        Celula *i = primeiro;
+        int j;
+        for (j = 0; j < pos; j++, i = i->prox)
+            ;
+        Celula *tmp = novaCelula(x);
+        tmp->ant = i;
+        tmp->prox = i->prox;
+        tmp->ant->prox = tmp->prox->ant = tmp;
+        tmp = i = NULL;
+    }
+}
+
+/**
+ * Remove um elemento de uma posicao especifica da lista
+ * considerando que o primeiro elemento valido esta na posicao 0.
+ * @param posicao Meio da remocao.
+ * @return resp int elemento a ser removido.
+ * @throws Exception Se <code>posicao</code> invalida.
+ */
+Filme remover(int pos)
+{
+    Filme resp;
+    int tam = tamanho();
+    if (primeiro == ultimo)
+    {
+        printf("Erro ao remover (vazia)!");
+    }
+    else if (pos < 0 || pos >= tam)
+    {
+        printf("Erro ao remover (posicao %d/%d invalida!", pos, tam);
+    }
+    else if (pos == 0)
+    {
+        resp = removerInicio();
+    }
+    else if (pos == tam - 1)
+    {
+        resp = removerFim();
+    }
+    else
+    {
+        // Caminhar ate a posicao anterior a insercao
+        Celula *i = primeiro->prox;
+        int j;
+        for (j = 0; j < pos; j++, i = i->prox)
+            ;
+        i->ant->prox = i->prox;
+        i->prox->ant = i->ant;
+        resp = i->elemento;
+        i->prox = i->ant = NULL;
+        free(i);
+        i = NULL;
+    }
+    return resp;
+}
+
+/**
+ * Mostra os elementos da lista separados por espacos.
+ */
+void mostrar()
+{
+    Celula *i;
+    for (i = primeiro->prox; i != NULL; i = i->prox)
+    {
         imprimir(i->elemento);
     }
 }
 
-void imprimirPilha()
+/**
+ * Mostra os elementos da lista de forma invertida
+ * e separados por espacos.
+ */
+void mostrarInverso()
 {
-    // printf("show the pilha \n");
-    mostrarRec(topo, tamanho() - 1);
+
+    Celula *i;
+    for (i = ultimo; i != primeiro; i = i->ant)
+    {
+        imprimir(i->elemento);
+    }
 }
 
-// FIM DA PILHA
+// forma de localizar celulas em uma lista duplamente encadeada
+Celula *localizarCel(int pos)
+{
+    Celula *resp;
+    int tam = tamanho();
+    if (primeiro == ultimo)
+    {
+        printf("A lista se encontra vazia!");
+    }
+    else if (pos == 0)
+    {
+        resp = primeiro->prox;
+    }
+    else if (pos == tam)
+    {
+        resp = ultimo;
+    }
+    else if (pos < 0 || pos > tam)
+    {
+        printf("Posição para busca inválida na lista!");
+    }
+    else
+    {
+        Celula *tmp = primeiro;
+        for (int i = 0; i < pos; i++, tmp = tmp->prox)
+            ;
+        resp = tmp->prox;
+    }
+    return resp;
+}
+
+// Swap para listas duplamente encadeadas
+void swap(int esq, int dir)
+{
+    Celula *cel1 = localizarCel(esq);
+    Celula *cel2 = localizarCel(dir);
+    Celula *tmp = cel1;
+    cel1->ant = cel2->ant;
+    cel1->prox = cel2->prox;
+    cel2->ant->prox = cel1;
+    cel2->prox->ant = cel1;
+    cel2->ant = tmp->ant;
+    cel2->prox = tmp->prox;
+    tmp->ant->prox = cel2;
+    tmp->prox->ant = cel2;
+}
+
+// QUICKSORT MODIFICADO PARA LISTAS DUPLAMENTE ENCADEADAS
+void quickSort(int esq, int dir)
+{
+    int meio = (esq + dir) / 2;
+    Celula *pivo, *cele = localizarCel(esq), *celd = localizarCel(dir);
+    pivo = localizarCel(meio);
+    int i = esq, j = dir;
+    mov += 6;
+    if (!strstr(localizarCel(i)->elemento.situacao, localizarCel(j)->elemento.situacao) && !strstr(localizarCel(i)->elemento.situacao, pivo->elemento.situacao))
+    {
+        while (i <= j)
+        {
+            while (!isStrMaior(cele->elemento.situacao, pivo->elemento.situacao))
+            {
+                i++;
+                cele = cele->prox;
+            }
+            while (isStrMaior(celd->elemento.situacao, pivo->elemento.situacao))
+            {
+                j--;
+                celd = celd->ant;
+            }
+            comp++;
+            if (i <= j)
+            {
+                swap(i, j);
+                mov += 2;
+                i++;
+                j--;
+            }
+        }
+        comp++;
+        if (esq < j)
+        {
+            quickSort(esq, j);
+        }
+        comp++;
+        if (i < dir)
+        {
+            quickSort(i, dir);
+        }
+    }
+}
+
+// FIM DA LISTA
 bool isFim(char *entrada)
 {
     entrada[strcspn(entrada, "\n")] = 0;
@@ -789,8 +1075,7 @@ int main()
 {
     char *entradas[1000]; // Array de entradas com os endereços dos filmes
     char entrada[STRMAX], comando[STRMAX];
-    char *verificacoes[1000]; // Array de entradas com os endereços dos filmes
-    // char *remocoes[1000];	  // Array de remocoes contendo nome dos filmes removidos
+    clock_t Ticks[2];
     int count = 0, countver = 0, num = 0, ctr = 0;
     do
     {
@@ -803,43 +1088,20 @@ int main()
             count++;
         }
     } while (!isFim(entrada));
-    // inserindo verificações
-    scanf("%d%*c", &num);
-    // printf("num %d\n",num);
-    //  fgets(entrada, STRMAX, stdin);
-    for (int i = 0; i < num; i++)
-    {
-        fgets(entrada, STRMAX, stdin);
-        // printf("Entry %s\n",entrada);
-        verificacoes[countver] = (char *)malloc((strlen(entrada) + 1) * sizeof(char));
-        strcpy(verificacoes[countver], entrada);
-        countver++;
-    }
+
     start();
     // criação dos objetos de filme/leitura/impressao
     for (int i = 0; i < count; i++)
     {
         Filme f;
         f = ler(f, entradas[i]);
-        inserir(f);
+        inserirInicio(f);
     }
-
-    // executando comandos da lista de acordo com a demanda
-    for (int i = 0; i < num; i++)
-    {
-        strcpy(comando, verificacoes[i]);
-        comando[strcspn(comando, "\n")] = 0;
-        comando[strcspn(comando, "\r")] = 0;
-        if (strstr(comando, "I"))
-        {
-            Filme fm = ler(fm, mySubString(comando, 2, strlen(comando)));
-            inserir(fm);
-        }
-        else if (strstr(comando, "R"))
-        {
-            printf("(R) %s\n", remover().nome);
-        }
-    }
-    imprimirPilha();
+    Ticks[0] = clock();
+    quickSort(0, count);
+    Ticks[1] = clock();
+    double tempo = (Ticks[1] - Ticks[0]) * 1000.0 / CLOCKS_PER_SEC;
+    gerarLog(tempo);
+    mostrarInverso();
     return 0;
 }
