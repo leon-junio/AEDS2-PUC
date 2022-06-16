@@ -1,6 +1,4 @@
 import java.util.Date;
-import java.util.Locale;
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.*;
 import java.text.ParseException;
@@ -57,7 +55,7 @@ class Ferramentas {
     public static boolean gerarLog(double inic, double fim, int comp) {
         boolean resp = true;
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_arvoreArvore.txt"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_arvoreBinaria.txt"));
             bw.write(getMatricula() + "\t" + (fim - inic) / 1000.0 + "\t" + comp);
             bw.close();
         } catch (IOException io) {
@@ -756,50 +754,18 @@ class Filme {
 
 class No {
     public No esq, dir;
-    public No2 no2;
-    public char elemento;
+    public Filme elemento;
 
     public No() {
         this.esq = null;
         this.dir = null;
-        this.no2 = null;
-        this.elemento = 0;
-    }
-
-    public No(char x) {
-        this.esq = null;
-        this.dir = null;
-        this.no2 = null;
-        this.elemento = x;
-    }
-
-    public char getElemento() {
-        return elemento;
-    }
-
-    public void setElemento(char elemento) {
-        this.elemento = elemento;
-    }
-
-}
-
-class No2 {
-    public No2 esq, dir;
-    public Filme elemento;
-    public String chave;
-
-    public No2() {
-        this.esq = null;
-        this.dir = null;
         this.elemento = null;
-        this.chave = "";
     }
 
-    public No2(Filme x) {
+    public No(Filme x) {
         this.esq = null;
         this.dir = null;
         this.elemento = x;
-        this.chave = x.getTitulo();
     }
 
     public Filme getElemento() {
@@ -812,80 +778,56 @@ class No2 {
 
 }
 
-class ArvoreCaracteres {
+class ArvoreBinaria {
     No raiz;
 
-    public ArvoreCaracteres() {
+    public ArvoreBinaria() {
         raiz = null;
     }
 
-    public void inserir(char x) throws Exception {
+    public void inserir(Filme x) throws Exception {
         raiz = inserir(x, raiz);
-    }
-
-    private No inserir(char x, No no) throws Exception {
-        comp++;
-        if (no == null) {
-            no = new No(x);
-        } else if (x < no.elemento) {
-            comp++;
-            no.esq = inserir(x, no.esq);
-        } else if (x > no.elemento) {
-            comp++;
-            no.dir = inserir(x, no.dir);
-        } else {
-            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
-        }
-        return no;
-    }
-
-    public boolean inserir(Filme x) throws Exception {
-        boolean resp = false;
-        comp++;
-        if (x.getTitulo().charAt(0) == raiz.elemento) {
-            resp = true;
-            raiz.no2 = inserir(x, raiz.no2);
-        } else if (x.getTitulo().charAt(0) < raiz.elemento) {
-            comp++;
-            raiz.esq = inserir(x, raiz.esq);
-        } else if (x.getTitulo().charAt(0) > raiz.elemento) {
-            comp++;
-            raiz.dir = inserir(x, raiz.dir);
-        }
-        return resp;
     }
 
     private No inserir(Filme x, No no) throws Exception {
         if (no == null) {
-            comp++;
-            throw new Exception("Erro o elemento é nulo");
-        } else if (x.getTitulo().charAt(0) < no.elemento) {
-            comp++;
+            no = new No(x);
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
             no.esq = inserir(x, no.esq);
-        } else if (x.getTitulo().charAt(0) > no.elemento) {
-            comp++;
-            no.dir = inserir(x, no.dir);
-        } else if (x.getTitulo().charAt(0) == no.elemento) {
-            comp++;
-            no.no2 = inserir(x, no.no2);
-        }
-        return no;
-    }
-
-    private No2 inserir(Filme x, No2 no) throws Exception {
-        comp++;
-        if (no == null) {
-            no = new No2(x);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.chave) < 0) {
-            comp++;
-            no.esq = inserir(x, no.esq);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.chave) > 0) {
-            comp++;
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
             no.dir = inserir(x, no.dir);
         } else {
             throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
         }
         return no;
+    }
+
+    public void inserirPai(Filme x) throws Exception {
+        if (raiz == null) {
+            raiz = new No(x);
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) < 0) {
+            inserirPai(x, raiz.esq, raiz);
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) > 0) {
+            inserirPai(x, raiz.dir, raiz);
+        } else {
+            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
+        }
+    }
+
+    private void inserirPai(Filme x, No no, No pai) throws Exception {
+        if (no == null) {
+            if (Ferramentas.comparadorStr(x.getTitulo(), pai.elemento.getTitulo()) < 0) {
+                pai.esq = new No(x);
+            } else {
+                pai.dir = new No(x);
+            }
+        } else if (Ferramentas.comparadorStr(no.elemento.getTitulo(), x.getTitulo()) < 0) {
+            inserirPai(x, no.esq, no);
+        } else if (Ferramentas.comparadorStr(no.elemento.getTitulo(), x.getTitulo()) > 0) {
+            inserirPai(x, no.dir, no);
+        } else {
+            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
+        }
     }
 
     private No getMaiorEsq(No i, No j) {
@@ -899,16 +841,16 @@ class ArvoreCaracteres {
         return j;
     }
 
-    public void remover(char x) throws Exception {
+    public void remover(Filme x) throws Exception {
         raiz = remover(x, raiz);
     }
 
-    private No remover(char x, No no) throws Exception {
+    private No remover(Filme x, No no) throws Exception {
         if (no == null) {
             throw new Exception("Nó nulo encontrado erro ao remover n°: " + x);
-        } else if (x < no.elemento) {
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
             no.esq = remover(x, no.esq);
-        } else if (x > no.elemento) {
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
             no.dir = remover(x, no.dir);
         } else if (no.dir == null) {
             no = no.esq;
@@ -920,27 +862,91 @@ class ArvoreCaracteres {
         return no;
     }
 
-    public boolean pesquisar(char x) {
+    public boolean pesquisar(Filme x) {
         boolean resp = false;
-        if (x == raiz.elemento) {
+        if (x.getTitulo().equals(raiz.elemento.getTitulo())) {
             resp = true;
-        } else if (x < raiz.elemento) {
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) < 0) {
             resp = pesquisar(x, raiz.esq);
-        } else if (x > raiz.elemento) {
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) > 0) {
             resp = pesquisar(x, raiz.dir);
         }
         return resp;
     }
 
-    private boolean pesquisar(char x, No no) {
+    private boolean pesquisar(Filme x, No no) {
         boolean resp = false;
         if (no == null) {
             resp = false;
-        } else if (x < no.elemento) {
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
             resp = pesquisar(x, no.esq);
-        } else if (x > no.elemento) {
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
             resp = pesquisar(x, no.dir);
-        } else if (x == no.elemento) {
+        } else if (x.getTitulo().equals(no.elemento.getTitulo())) {
+            resp = true;
+        }
+        return resp;
+    }
+
+    public Filme pesquisar(String x) {
+        Filme resp = null;
+        if (x.equals(raiz.elemento.getTitulo())) {
+            resp = raiz.elemento;
+        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) < 0) {
+            resp = pesquisar(x, raiz.esq);
+        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) > 0) {
+            resp = pesquisar(x, raiz.dir);
+        }
+        return resp;
+    }
+
+    public Filme pesquisar(String x, No i) {
+        Filme resp = null;
+        if (i == null) {
+            resp = null;
+        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) < 0) {
+            resp = pesquisar(x, i.esq);
+        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) > 0) {
+            resp = pesquisar(x, i.dir);
+        } else if (x.equals(i.elemento.getTitulo())) {
+            resp = i.elemento;
+        }
+        return resp;
+    }
+
+    public boolean pesquisarDbg(String x) {
+        boolean resp = false;
+        MyIO.println(x);
+        MyIO.print("=>raiz ");
+        comp = 0;
+        if (x.equals(raiz.elemento.getTitulo())) {
+            resp = true;
+        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) < 0) {
+            MyIO.print("esq ");
+            comp++;
+            resp = pesquisarDbg(x, raiz.esq);
+        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) > 0) {
+            MyIO.print("dir ");
+            comp++;
+            resp = pesquisarDbg(x, raiz.dir);
+        }
+        return resp;
+    }
+
+    public boolean pesquisarDbg(String x, No i) {
+        boolean resp = false;
+        comp++;
+        if (i == null) {
+            resp = false;
+        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) < 0) {
+            MyIO.print("esq ");
+            comp++;
+            resp = pesquisarDbg(x, i.esq);
+        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) > 0) {
+            MyIO.print("dir ");
+            comp++;
+            resp = pesquisarDbg(x, i.dir);
+        } else if (x.equals(i.elemento.getTitulo())) {
             resp = true;
         }
         return resp;
@@ -966,7 +972,7 @@ class ArvoreCaracteres {
         if (raiz == null) {
             throw new Exception("Erro a arvore se encontra vazia");
         } else if (nivel == 0) {
-            System.out.println(raiz.elemento);
+            System.out.println(raiz.elemento.getTitulo());
         } else {
             imprimirNivel(raiz, 0, nivel);
             System.out.println("");
@@ -977,7 +983,7 @@ class ArvoreCaracteres {
         if (no == null) {
             num--;
         } else if (num == nivel) {
-            System.out.print(no.elemento + " ");
+            System.out.print(no.elemento.getTitulo() + " ");
         } else {
             num++;
             imprimirNivel(no.esq, num, nivel);
@@ -995,80 +1001,31 @@ class ArvoreCaracteres {
     }
 
     public void caminharCentral() {
-        System.out.print("[\n ");
+        System.out.print("[ ");
         caminharCentral(raiz);
         System.out.println("]");
     }
 
     private void caminharCentral(No i) {
         if (i != null) {
-            caminharCentral(i.esq);
-            System.out.print(i.elemento + " \n");
-            caminharCentral(i.no2);
-            caminharCentral(i.dir);
+            caminharCentral(i.esq); // Elementos da esquerda.
+            System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
+            caminharCentral(i.dir); // Elementos da direita.
         }
     }
 
-    private void caminharCentral(No2 i) {
+    public void caminharPre() {
+        System.out.print("[ ");
+        caminharPre(raiz);
+        System.out.println("]");
+    }
+
+    private void caminharPre(No i) {
         if (i != null) {
-            caminharCentral(i.esq);
-            System.out.print(i.chave + " \n");
-            caminharCentral(i.dir);
+            System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
+            caminharPre(i.esq); // Elementos da esquerda.
+            caminharPre(i.dir); // Elementos da direita.
         }
-    }
-
-    public void caminharPre(String x) {
-        comp++;
-        MyIO.println("=> " + x);
-        MyIO.print("raiz ");
-        if (caminharPre(x, raiz)) {
-            MyIO.print(" SIM\n");
-        } else {
-            MyIO.print(" NAO\n");
-        }
-    }
-
-    private boolean caminharPre(String x, No i) {
-        boolean resp = false;
-        comp++;
-        if (i != null) {
-            comp++;
-            if (pesquisarDbg2(x, i.no2)) {
-                return true;
-            } else {
-                MyIO.print(" ESQ ");
-                comp++;
-                if (resp != true) {
-                    resp = caminharPre(x, i.esq);
-                    comp++;
-                    if (resp == false) {
-                        MyIO.print(" DIR ");
-                        resp = caminharPre(x, i.dir);
-                    }
-                }
-            }
-        }
-        return resp;
-    }
-
-    public boolean pesquisarDbg2(String x, No2 i) {
-        boolean resp = false;
-        comp++;
-        if (i == null) {
-            resp = false;
-        } else if (x.equals(i.chave)) {
-            comp++;
-            resp = true;
-        } else if (Ferramentas.comparadorStr(x, i.chave) < 0) {
-            MyIO.print("esq ");
-            comp++;
-            resp = pesquisarDbg2(x, i.esq);
-        } else if (Ferramentas.comparadorStr(x, i.chave) > 0) {
-            MyIO.print("dir ");
-            comp++;
-            resp = pesquisarDbg2(x, i.dir);
-        }
-        return resp;
     }
 
     public void caminharPos() {
@@ -1081,7 +1038,7 @@ class ArvoreCaracteres {
         if (i != null) {
             caminharPos(i.esq); // Elementos da esquerda.
             caminharPos(i.dir); // Elementos da direita.
-            System.out.print(i.elemento + " "); // Conteudo do no.
+            System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
         }
     }
 
@@ -1106,70 +1063,73 @@ class ArvoreCaracteres {
 
 }
 
-public class Tp4Q02 {
+public class Tp4Q03 {
 
     private static boolean isFim(String entrada) {
         return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
     }
 
-    public final static Locale loc = new Locale("pt", "BR");
-    public static Scanner scan = new Scanner(System.in, "UTF-8");
-
     public static void main(String[] args) {
         try {
-            scan.useLocale(loc);
             ArrayList<String> entradas = new ArrayList<>();
+            ArrayList<String> removes = new ArrayList<>();
             ArrayList<String> pesquisas = new ArrayList<>();
             String verificacoes[];
-            ArvoreCaracteres arvore;
+            ArvoreBinaria arvore;
             int n = 0, comp = 0;
             double fim, inic;
             String entrada = "", comando;
             MyIO.setCharset("UTF-8");
             do {
-                entrada = scan.nextLine();
+                entrada = MyIO.readLine();
                 if (!isFim(entrada)) {
                     entradas.add(entrada);
                 }
             } while (!isFim(entrada));
-            n = scan.nextInt();
-            scan.next();
+            n = MyIO.readInt();
             verificacoes = new String[n];
             // salvando comandos de verificação para serem executados
             for (int i = 0; i < n; i++) {
-                verificacoes[i] = entrada = scan.nextLine();
+                verificacoes[i] = entrada = MyIO.readLine();
             }
 
             do {
-                entrada = scan.nextLine();
+                entrada = MyIO.readLine();
                 if (!isFim(entrada)) {
                     pesquisas.add(entrada);
                 }
             } while (!isFim(entrada));
 
-            // Iniciando arvore 1 que contempla as letras
-            arvore = new ArvoreCaracteres();
+            // criação dos objetos de filme/leitura/impressao
+            arvore = new ArvoreBinaria();
             inic = arvore.now();
-            String chars = "D, R, Z, X, V, B, F, P, U, I, G, E, J, L, H, T, A, W, S, O, M, N, K, C, Y, Q";
-            chars = chars.replace(", ", "");
-            for (int i = 0; i < chars.length(); i++) {
-                arvore.inserir(chars.charAt(i));
-            }
-
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
                 arvore.inserir(filme);
             }
+
+            // executando comandos da pilha de acordo com a demanda
             for (int i = 0; i < n; i++) {
                 comando = verificacoes[i];
+                // System.out.println(comando);
                 if (Ferramentas.myContains(comando, "I ")) {
                     arvore.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
+                } else if (Ferramentas.myContains(comando, "R ")) {
+                    Filme aux = arvore.pesquisar(Ferramentas.mySubstring(comando, 2, comando.length()));
+                    arvore.remover(aux);
+                    removes.add(aux.getTitulo());
+                    aux = null;
                 }
             }
+
             for (String find : pesquisas) {
-                arvore.caminharPre(find);
+                if (arvore.pesquisarDbg(find)) {
+                    MyIO.print("SIM\n");
+                } else {
+                    MyIO.print("NAO\n");
+                }
+                comp += arvore.getComparacoes();
             }
-            comp += arvore.getComparacoes();
             fim = arvore.now();
             Ferramentas.gerarLog(inic, fim, comp);
         } catch (Exception e) {
