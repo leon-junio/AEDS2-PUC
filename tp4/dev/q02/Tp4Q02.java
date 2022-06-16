@@ -741,8 +741,8 @@ class Filme {
     // extração de dados
     private File getFile(String name) throws IOException {
         File file;
-        file = new File("/tmp/filmes/" + name);
-        // file = new File("../tmp/filmes/" + name);
+        // file = new File("/tmp/filmes/" + name);
+        file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
             throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
@@ -754,18 +754,50 @@ class Filme {
 
 class No {
     public No esq, dir;
-    public Filme elemento;
+    public No2 no2;
+    public char elemento;
 
     public No() {
         this.esq = null;
         this.dir = null;
-        this.elemento = null;
+        this.no2 = null;
+        this.elemento = 0;
     }
 
-    public No(Filme x) {
+    public No(char x) {
+        this.esq = null;
+        this.dir = null;
+        this.no2 = null;
+        this.elemento = x;
+    }
+
+    public char getElemento() {
+        return elemento;
+    }
+
+    public void setElemento(char elemento) {
+        this.elemento = elemento;
+    }
+
+}
+
+class No2 {
+    public No2 esq, dir;
+    public Filme elemento;
+    public String chave;
+
+    public No2() {
+        this.esq = null;
+        this.dir = null;
+        this.elemento = null;
+        this.chave = "";
+    }
+
+    public No2(Filme x) {
         this.esq = null;
         this.dir = null;
         this.elemento = x;
+        this.chave = x.getTitulo();
     }
 
     public Filme getElemento() {
@@ -778,23 +810,26 @@ class No {
 
 }
 
-class ArvoreBinaria {
+class ArvoreCaracteres {
     No raiz;
 
-    public ArvoreBinaria() {
+    public ArvoreCaracteres() {
         raiz = null;
     }
 
-    public void inserir(Filme x) throws Exception {
+    public void inserir(char x) throws Exception {
         raiz = inserir(x, raiz);
     }
 
-    private No inserir(Filme x, No no) throws Exception {
+    private No inserir(char x, No no) throws Exception {
+        comp++;
         if (no == null) {
             no = new No(x);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
+        } else if (x < no.elemento) {
+            comp++;
             no.esq = inserir(x, no.esq);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
+        } else if (x > no.elemento) {
+            comp++;
             no.dir = inserir(x, no.dir);
         } else {
             throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
@@ -802,32 +837,53 @@ class ArvoreBinaria {
         return no;
     }
 
-    public void inserirPai(Filme x) throws Exception {
-        if (raiz == null) {
-            raiz = new No(x);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) < 0) {
-            inserirPai(x, raiz.esq, raiz);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) > 0) {
-            inserirPai(x, raiz.dir, raiz);
-        } else {
-            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
+    public boolean inserir(Filme x) throws Exception {
+        boolean resp = false;
+        comp++;
+        if (x.getTitulo().charAt(0) == raiz.elemento) {
+            resp = true;
+            raiz.no2 = inserir(x, raiz.no2);
+        } else if (x.getTitulo().charAt(0) < raiz.elemento) {
+            comp++;
+            raiz.esq = inserir(x, raiz.esq);
+        } else if (x.getTitulo().charAt(0) > raiz.elemento) {
+            comp++;
+            raiz.dir = inserir(x, raiz.dir);
         }
+        return resp;
     }
 
-    private void inserirPai(Filme x, No no, No pai) throws Exception {
+    private No inserir(Filme x, No no) throws Exception {
         if (no == null) {
-            if (Ferramentas.comparadorStr(x.getTitulo(), pai.elemento.getTitulo()) < 0) {
-                pai.esq = new No(x);
-            } else {
-                pai.dir = new No(x);
-            }
-        } else if (Ferramentas.comparadorStr(no.elemento.getTitulo(), x.getTitulo()) < 0) {
-            inserirPai(x, no.esq, no);
-        } else if (Ferramentas.comparadorStr(no.elemento.getTitulo(), x.getTitulo()) > 0) {
-            inserirPai(x, no.dir, no);
+            comp++;
+            throw new Exception("Erro o elemento é nulo");
+        } else if (x.getTitulo().charAt(0) < no.elemento) {
+            comp++;
+            no.esq = inserir(x, no.esq);
+        } else if (x.getTitulo().charAt(0) > no.elemento) {
+            comp++;
+            no.dir = inserir(x, no.dir);
+        } else if (x.getTitulo().charAt(0) == no.elemento) {
+            comp++;
+            no.no2 = inserir(x, no.no2);
+        }
+        return no;
+    }
+
+    private No2 inserir(Filme x, No2 no) throws Exception {
+        comp++;
+        if (no == null) {
+            no = new No2(x);
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.chave) < 0) {
+            comp++;
+            no.esq = inserir(x, no.esq);
+        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.chave) > 0) {
+            comp++;
+            no.dir = inserir(x, no.dir);
         } else {
             throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
         }
+        return no;
     }
 
     private No getMaiorEsq(No i, No j) {
@@ -841,16 +897,16 @@ class ArvoreBinaria {
         return j;
     }
 
-    public void remover(Filme x) throws Exception {
+    public void remover(char x) throws Exception {
         raiz = remover(x, raiz);
     }
 
-    private No remover(Filme x, No no) throws Exception {
+    private No remover(char x, No no) throws Exception {
         if (no == null) {
             throw new Exception("Nó nulo encontrado erro ao remover n°: " + x);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
+        } else if (x < no.elemento) {
             no.esq = remover(x, no.esq);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
+        } else if (x > no.elemento) {
             no.dir = remover(x, no.dir);
         } else if (no.dir == null) {
             no = no.esq;
@@ -862,91 +918,27 @@ class ArvoreBinaria {
         return no;
     }
 
-    public boolean pesquisar(Filme x) {
+    public boolean pesquisar(char x) {
         boolean resp = false;
-        if (x.getTitulo().equals(raiz.elemento.getTitulo())) {
+        if (x == raiz.elemento) {
             resp = true;
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) < 0) {
+        } else if (x < raiz.elemento) {
             resp = pesquisar(x, raiz.esq);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) > 0) {
+        } else if (x > raiz.elemento) {
             resp = pesquisar(x, raiz.dir);
         }
         return resp;
     }
 
-    private boolean pesquisar(Filme x, No no) {
+    private boolean pesquisar(char x, No no) {
         boolean resp = false;
         if (no == null) {
             resp = false;
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
+        } else if (x < no.elemento) {
             resp = pesquisar(x, no.esq);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
+        } else if (x > no.elemento) {
             resp = pesquisar(x, no.dir);
-        } else if (x.getTitulo().equals(no.elemento.getTitulo())) {
-            resp = true;
-        }
-        return resp;
-    }
-
-    public Filme pesquisar(String x) {
-        Filme resp = null;
-        if (x.equals(raiz.elemento.getTitulo())) {
-            resp = raiz.elemento;
-        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) < 0) {
-            resp = pesquisar(x, raiz.esq);
-        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) > 0) {
-            resp = pesquisar(x, raiz.dir);
-        }
-        return resp;
-    }
-
-    public Filme pesquisar(String x, No i) {
-        Filme resp = null;
-        if (i == null) {
-            resp = null;
-        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) < 0) {
-            resp = pesquisar(x, i.esq);
-        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) > 0) {
-            resp = pesquisar(x, i.dir);
-        } else if (x.equals(i.elemento.getTitulo())) {
-            resp = i.elemento;
-        }
-        return resp;
-    }
-
-    public boolean pesquisarDbg(String x) {
-        boolean resp = false;
-        MyIO.println(x);
-        MyIO.print("=>raiz ");
-        comp = 0;
-        if (x.equals(raiz.elemento.getTitulo())) {
-            resp = true;
-        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) < 0) {
-            MyIO.print("esq ");
-            comp++;
-            resp = pesquisarDbg(x, raiz.esq);
-        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) > 0) {
-            MyIO.print("dir ");
-            comp++;
-            resp = pesquisarDbg(x, raiz.dir);
-        }
-        return resp;
-    }
-
-    public boolean pesquisarDbg(String x, No i) {
-        boolean resp = false;
-        comp++;
-        if (i == null) {
-            resp = false;
-        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) < 0) {
-            MyIO.print("esq ");
-            comp++;
-            resp = pesquisarDbg(x, i.esq);
-        } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) > 0) {
-            MyIO.print("dir ");
-            comp++;
-            resp = pesquisarDbg(x, i.dir);
-        } else if (x.equals(i.elemento.getTitulo())) {
+        } else if (x == no.elemento) {
             resp = true;
         }
         return resp;
@@ -972,7 +964,7 @@ class ArvoreBinaria {
         if (raiz == null) {
             throw new Exception("Erro a arvore se encontra vazia");
         } else if (nivel == 0) {
-            System.out.println(raiz.elemento.getTitulo());
+            System.out.println(raiz.elemento);
         } else {
             imprimirNivel(raiz, 0, nivel);
             System.out.println("");
@@ -983,7 +975,7 @@ class ArvoreBinaria {
         if (no == null) {
             num--;
         } else if (num == nivel) {
-            System.out.print(no.elemento.getTitulo() + " ");
+            System.out.print(no.elemento + " ");
         } else {
             num++;
             imprimirNivel(no.esq, num, nivel);
@@ -1001,7 +993,7 @@ class ArvoreBinaria {
     }
 
     public void caminharCentral() {
-        System.out.print("[ ");
+        System.out.print("[\n ");
         caminharCentral(raiz);
         System.out.println("]");
     }
@@ -1009,23 +1001,71 @@ class ArvoreBinaria {
     private void caminharCentral(No i) {
         if (i != null) {
             caminharCentral(i.esq); // Elementos da esquerda.
-            System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
+            System.out.print(i.elemento + " \n"); // Conteudo do no.
+            caminharCentral(i.no2);
             caminharCentral(i.dir); // Elementos da direita.
         }
     }
 
-    public void caminharPre() {
-        System.out.print("[ ");
-        caminharPre(raiz);
-        System.out.println("]");
+    private void caminharCentral(No2 i) {
+        if (i != null) {
+            caminharCentral(i.esq); // Elementos da esquerda.
+            System.out.print(i.chave + " \n"); // Conteudo do no.
+            caminharCentral(i.dir); // Elementos da direita.
+        }
     }
 
-    private void caminharPre(No i) {
-        if (i != null) {
-            System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
-            caminharPre(i.esq); // Elementos da esquerda.
-            caminharPre(i.dir); // Elementos da direita.
+    public void caminharPre(String x) {
+        comp++;
+        System.out.println("=> " + x);
+        System.out.print("raiz ");
+        if (caminharPre(x, raiz)) {
+            MyIO.print(" SIM\n");
+        } else {
+            MyIO.print(" NAO\n");
         }
+    }
+
+    private boolean caminharPre(String x, No i) {
+        boolean resp = false;
+        comp++;
+        if (i != null) {
+            comp++;
+            if (pesquisarDbg2(x, i.no2)) {
+                return true;
+            } else {
+                MyIO.print(" ESQ ");
+                if (resp != true) {
+                    resp = caminharPre(x, i.esq); // Elementos da esquerda.
+                    if (resp == false) {
+                        MyIO.print(" DIR ");
+                        resp = caminharPre(x, i.dir); // Elementos da direita.
+                    }
+                }
+            }
+        }
+        return resp;
+    }
+
+    public boolean pesquisarDbg2(String x, No2 i) {
+        boolean resp = false;
+        comp++;
+        if (i != null && x.charAt(0) == i.chave.charAt(0)) {
+        }
+        if (i == null) {
+            resp = false;
+        } else if (x.equals(i.chave)) {
+            resp = true;
+        } else if (Ferramentas.comparadorStr(x, i.chave) < 0) {
+            MyIO.print("esq ");
+            comp++;
+            resp = pesquisarDbg2(x, i.esq);
+        } else if (Ferramentas.comparadorStr(x, i.chave) > 0) {
+            MyIO.print("dir ");
+            comp++;
+            resp = pesquisarDbg2(x, i.dir);
+        }
+        return resp;
     }
 
     public void caminharPos() {
@@ -1038,7 +1078,7 @@ class ArvoreBinaria {
         if (i != null) {
             caminharPos(i.esq); // Elementos da esquerda.
             caminharPos(i.dir); // Elementos da direita.
-            System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
+            System.out.print(i.elemento + " "); // Conteudo do no.
         }
     }
 
@@ -1063,7 +1103,7 @@ class ArvoreBinaria {
 
 }
 
-public class Tp4Q01 {
+public class Tp4Q02 {
 
     private static boolean isFim(String entrada) {
         return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
@@ -1072,10 +1112,9 @@ public class Tp4Q01 {
     public static void main(String[] args) {
         try {
             ArrayList<String> entradas = new ArrayList<>();
-            ArrayList<String> removes = new ArrayList<>();
             ArrayList<String> pesquisas = new ArrayList<>();
             String verificacoes[];
-            ArvoreBinaria arvore;
+            ArvoreCaracteres arvore;
             int n = 0, comp = 0;
             double fim, inic;
             String entrada = "", comando;
@@ -1100,36 +1139,30 @@ public class Tp4Q01 {
                 }
             } while (!isFim(entrada));
 
-            // criação dos objetos de filme/leitura/impressao
-            arvore = new ArvoreBinaria();
+            // System.out.println("INSERT LETRAS");
+
+            // Iniciando arvore 1 que contempla as letras
+            arvore = new ArvoreCaracteres();
+            String chars = "D, R, Z, X, V, B, F, P, U, I, G, E, J, L, H, T, A, W, S, O, M, N, K, C, Y, Q";
+            chars = chars.replace(", ", "");
+            for (int i = 0; i < chars.length(); i++) {
+                arvore.inserir(chars.charAt(i));
+            }
             inic = arvore.now();
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
                 arvore.inserir(filme);
             }
-
-            // executando comandos da pilha de acordo com a demanda
             for (int i = 0; i < n; i++) {
                 comando = verificacoes[i];
-                // System.out.println(comando);
                 if (Ferramentas.myContains(comando, "I ")) {
                     arvore.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
-                } else if (Ferramentas.myContains(comando, "R ")) {
-                    Filme aux = arvore.pesquisar(Ferramentas.mySubstring(comando, 2, comando.length()));
-                    arvore.remover(aux);
-                    removes.add(aux.getTitulo());
-                    aux = null;
                 }
             }
-
             for (String find : pesquisas) {
-                if (arvore.pesquisarDbg(find)) {
-                    MyIO.print("SIM\n");
-                } else {
-                    MyIO.print("NAO\n");
-                }
-                comp += arvore.getComparacoes();
+                arvore.caminharPre(find);
             }
+            comp += arvore.getComparacoes();
             fim = arvore.now();
             Ferramentas.gerarLog(inic, fim, comp);
         } catch (Exception e) {
