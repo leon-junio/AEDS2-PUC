@@ -49,13 +49,21 @@ class Ferramentas {
         return str.compareTo(str2);
     }
 
+    // Função para comparar Strings e retornar um inteiro
+    // retorna > 1 se a str1 for maior que a str2
+    // retorna < 1 se a str1 for menor que a str2
+    // retorna == 0 se a str1 for igual a str2
+    public static int comparadorStr(Filme str, Filme str2) {
+        return str.toString().compareTo(str2.toString());
+    }
+
     // Função responsavel por gerar o log contendo as informações de execução do
     // código
     // Tais como o tempo, comparações e minha matricula
     public static boolean gerarLog(double inic, double fim, int comp) {
         boolean resp = true;
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_avl.txt"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_alvinegra.txt"));
             bw.write(getMatricula() + "\t" + (fim - inic) / 1000.0 + "\t" + comp);
             bw.close();
         } catch (IOException io) {
@@ -66,7 +74,7 @@ class Ferramentas {
     }
 
     // Função para ler entre espaços dentro de uma frase
-    // No maximo dois espaços
+    // NoAn maximo dois espaços
     public static String lerEntreSpaces(String frase) {
         String resp = "";
         boolean check = false;
@@ -750,22 +758,31 @@ class Filme {
         }
     }
 
-}
-
-class No {
-    public No esq, dir;
-    public Filme elemento;
-    public int altura;
-
-    public No(Filme x) {
-        this(x, null, null, 0);
+    @Override
+    public String toString() {
+        return getTitulo();
     }
 
-    public No(Filme x, No esq, No dir, int altura) {
+}
+
+class NoAn {
+    public NoAn esq, dir;
+    public Filme elemento;
+    public boolean cor;
+
+    public NoAn(Filme x) {
+        this(x, null, null, false);
+    }
+
+    public NoAn(Filme x, boolean cor) {
+        this(x, null, null, cor);
+    }
+
+    public NoAn(Filme x, NoAn esq, NoAn dir, boolean cor) {
         this.esq = esq;
         this.dir = dir;
         this.elemento = x;
-        this.altura = altura;
+        this.cor = cor;
     }
 
     public Filme getElemento() {
@@ -776,76 +793,112 @@ class No {
         this.elemento = elemento;
     }
 
-    public void setAltura() {
-        this.altura = 1 + Math.max(getAltura(esq), getAltura(dir));
-    }
-
-    public int getAltura(No no) {
-        int resp;
-        if (no == null) {
-            resp = 0;
-        } else {
-            resp = no.altura;
-        }
-        return resp;
-    }
-
 }
 
-class AVL {
-    No raiz;
+class ArvoreColorida {
+    NoAn raiz;
 
-    public AVL() {
+    public ArvoreColorida() {
         raiz = null;
     }
 
+    public boolean isNoTipoQuatro(NoAn no) {
+        return (no.esq != null && no.dir != null && no.dir.cor == true && no.esq.cor == true);
+    }
+
     public void inserir(Filme x) throws Exception {
-        raiz = inserir(x, raiz);
-    }
-
-    private No inserir(Filme x, No no) throws Exception {
-        if (no == null) {
-            no = new No(x);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
-            no.esq = inserir(x, no.esq);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
-            no.dir = inserir(x, no.dir);
+        if (raiz == null) {
+            raiz = new NoAn(x);
+        } else if (raiz.esq == null && raiz.dir == null) {
+            if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) < 0) {
+                raiz.esq = new NoAn(x);
+            } else {
+                raiz.dir = new NoAn(x);
+            }
+        } else if (raiz.esq == null) {
+            if (Ferramentas.comparadorStr(x, raiz.elemento) < 0) {
+                raiz.esq = new NoAn(x);
+            } else if (Ferramentas.comparadorStr(x, raiz.dir.elemento) < 0) {
+                raiz.esq = new NoAn(raiz.elemento);
+                raiz.elemento = x;
+            } else {
+                raiz.esq = new NoAn(raiz.elemento);
+                raiz.elemento = raiz.dir.elemento;
+                raiz.dir.elemento = x;
+            }
+            raiz.esq.cor = raiz.dir.cor = false;
+        } else if (raiz.dir == null) {
+            if (Ferramentas.comparadorStr(x, raiz.elemento) > 0) {
+                raiz.dir = new NoAn(x);
+            } else if (Ferramentas.comparadorStr(x, raiz.esq.elemento) > 0) {
+                raiz.dir = new NoAn(raiz.elemento);
+                raiz.elemento = x;
+            } else {
+                raiz.dir = new NoAn(raiz.elemento);
+                raiz.elemento = raiz.esq.elemento;
+                raiz.esq.elemento = x;
+            }
+            raiz.esq.cor = raiz.dir.cor = false;
         } else {
-            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
+            inserir(x, null, null, null, raiz);
         }
-        return balancear(no);
+        raiz.cor = false;
     }
 
-    private No getMaiorEsq(No i, No j) {
-        if (j.dir == null) {
-            i.elemento = j.elemento;
-            j = j.esq; // ao remover a gente pega o elemento na direita e conecta no nó removido
-            // pode ser null ou uma outra subarvore e vai se conectar normalmente
+    public void balancear(NoAn bisavo, NoAn avo, NoAn pai, NoAn i) throws Exception {
+        if (pai.cor == true) {
+            if (Ferramentas.comparadorStr(pai.elemento, avo.elemento) > 0) {
+                if (Ferramentas.comparadorStr(i.elemento, pai.elemento) > 0) {
+                    avo = rotacionarEsq(avo);
+                } else {
+                    avo = rotacionarDirEsq(avo);
+                }
+            } else {
+                if (Ferramentas.comparadorStr(i.elemento, pai.elemento) < 0) {
+                    avo = rotacionarDir(avo);
+                } else {
+                    avo = rotacionarEsqDir(avo);
+                }
+            }
+        }
+        if (bisavo == null) {
+            raiz = avo;
+        } else if (Ferramentas.comparadorStr(avo.elemento, bisavo.elemento) < 0) {
+            bisavo.esq = avo;
         } else {
-            j.dir = getMaiorEsq(i, j.dir); // se o elemento da direita nao for nulo continua indo ate encontrar
+            bisavo.dir = avo;
         }
-        return j;
+        avo.cor = false;
+        avo.esq.cor = avo.dir.cor = true;
     }
 
-    public void remover(Filme x) throws Exception {
-        raiz = remover(x, raiz);
-    }
-
-    private No remover(Filme x, No no) throws Exception {
-        if (no == null) {
-            throw new Exception("Nó nulo encontrado erro ao remover n°: " + x);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) < 0) {
-            no.esq = remover(x, no.esq);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), no.elemento.getTitulo()) > 0) {
-            no.dir = remover(x, no.dir);
-        } else if (no.dir == null) {
-            no = no.esq;
-        } else if (no.esq == null) {
-            no = no.dir;
+    private void inserir(Filme x, NoAn bisavo, NoAn avo, NoAn pai, NoAn i) throws Exception {
+        if (i == null) {
+            if (Ferramentas.comparadorStr(x, pai.elemento) < 0) {
+                i = pai.esq = new NoAn(x, true);
+            } else {
+                i = pai.dir = new NoAn(x, true);
+            }
+            if (pai.cor) {
+                balancear(bisavo, avo, pai, i);
+            }
         } else {
-            no.esq = getMaiorEsq(no, no.esq);
+            if (isNoTipoQuatro(i)) {
+                i = fragmentarNoTipoQuatro(i);
+                if (i == raiz) {
+                    i.cor = false;
+                } else if (pai.cor) {
+                    balancear(bisavo, avo, pai, i);
+                }
+            }
+            if (Ferramentas.comparadorStr(x, i.elemento) < 0) {
+                inserir(x, avo, pai, i, i.esq);
+            } else if (Ferramentas.comparadorStr(x, i.elemento) > 0) {
+                inserir(x, avo, pai, i, i.dir);
+            } else {
+                throw new Exception("Erro interno ao inserir elemento (elemento repetido)");
+            }
         }
-        return balancear(no);
     }
 
     public boolean pesquisar(Filme x) {
@@ -860,7 +913,7 @@ class AVL {
         return resp;
     }
 
-    private boolean pesquisar(Filme x, No no) {
+    private boolean pesquisar(Filme x, NoAn no) {
         boolean resp = false;
         if (no == null) {
             resp = false;
@@ -886,7 +939,7 @@ class AVL {
         return resp;
     }
 
-    public Filme pesquisar(String x, No i) {
+    public Filme pesquisar(String x, NoAn i) {
         Filme resp = null;
         if (i == null) {
             resp = null;
@@ -905,25 +958,17 @@ class AVL {
         MyIO.println(x);
         MyIO.print("raiz ");
         comp = 0;
-        if (x.equals(raiz.elemento.getTitulo())) {
-            resp = true;
-        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) < 0) {
-            MyIO.print("esq ");
-            comp++;
-            resp = pesquisarDbg(x, raiz.esq);
-        } else if (Ferramentas.comparadorStr(x, raiz.elemento.getTitulo()) > 0) {
-            MyIO.print("dir ");
-            comp++;
-            resp = pesquisarDbg(x, raiz.dir);
-        }
+        resp = pesquisarDbg(x, raiz);
         return resp;
     }
 
-    public boolean pesquisarDbg(String x, No i) {
+    public boolean pesquisarDbg(String x, NoAn i) {
         boolean resp = false;
         comp++;
         if (i == null) {
             resp = false;
+        } else if (x.equals(i.elemento.getTitulo())) {
+            resp = true;
         } else if (Ferramentas.comparadorStr(x, i.elemento.getTitulo()) < 0) {
             MyIO.print("esq ");
             comp++;
@@ -932,8 +977,6 @@ class AVL {
             MyIO.print("dir ");
             comp++;
             resp = pesquisarDbg(x, i.dir);
-        } else if (x.equals(i.elemento.getTitulo())) {
-            resp = true;
         }
         return resp;
     }
@@ -942,7 +985,7 @@ class AVL {
         return altura(raiz, 0);
     }
 
-    private int altura(No no, int tam) {
+    private int altura(NoAn no, int tam) {
         if (no == null) {
             tam--;
         } else {
@@ -965,7 +1008,7 @@ class AVL {
         }
     }
 
-    private void imprimirNivel(No no, int num, int nivel) throws Exception {
+    private void imprimirNivel(NoAn no, int num, int nivel) throws Exception {
         if (no == null) {
             num--;
         } else if (num == nivel) {
@@ -992,7 +1035,7 @@ class AVL {
         System.out.println("]");
     }
 
-    private void caminharCentral(No i) {
+    private void caminharCentral(NoAn i) {
         if (i != null) {
             caminharCentral(i.esq); // Elementos da esquerda.
             System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
@@ -1006,7 +1049,7 @@ class AVL {
         System.out.println("]");
     }
 
-    private void caminharPre(No i) {
+    private void caminharPre(NoAn i) {
         if (i != null) {
             System.out.print(i.elemento.getTitulo() + " "); // Conteudo do no.
             caminharPre(i.esq); // Elementos da esquerda.
@@ -1020,7 +1063,7 @@ class AVL {
         System.out.println("]");
     }
 
-    private void caminharPos(No i) {
+    private void caminharPos(NoAn i) {
         if (i != null) {
             caminharPos(i.esq); // Elementos da esquerda.
             caminharPos(i.dir); // Elementos da direita.
@@ -1028,90 +1071,41 @@ class AVL {
         }
     }
 
-    public No rotacionarEsq(No no) {
-        No nodir = no.dir;
-        No noDirEsq = nodir.esq;
+    public NoAn fragmentarNoTipoQuatro(NoAn i) throws Exception {
+        if (isNoTipoQuatro(i)) {
+            i.cor = true;
+            i.dir.cor = false;
+            i.esq.cor = false;
+        } else {
+            throw new Exception("Erro ao tentar fragmentar um nó que não é 4 nós");
+        }
+        return i;
+    }
+
+    public NoAn rotacionarEsq(NoAn no) {
+        NoAn nodir = no.dir;
+        NoAn noDirEsq = nodir.esq;
         nodir.esq = no;
         no.dir = noDirEsq;
-        no.setAltura();
-        nodir.setAltura();
         return nodir;
     }
 
-    public No rotacionarDir(No no) {
-        No noesq = no.esq;
-        No noEsqDir = noesq.dir;
+    public NoAn rotacionarDir(NoAn no) {
+        NoAn noesq = no.esq;
+        NoAn noEsqDir = noesq.dir;
         noesq.dir = no;
         no.esq = noEsqDir;
-        no.setAltura();
-        noesq.setAltura();
         return noesq;
     }
 
-    public No balancear2(No no) throws Exception {
-        if (no != null) {
-            int fator = no.getAltura(no.dir) - no.getAltura(no.esq);
-            if (Math.abs(fator) <= 1) {
-                no.setAltura();
-            } else if (fator == 2) {
-                int fatFilhos = no.getAltura(no.dir.dir) - no.getAltura(no.dir.esq);
-                if (fatFilhos == -1) {
-                    no.dir = rotacionarDir(no.dir);
-                }
-                no = rotacionarEsq(no);
-            } else if (fator == -2) {
-                int fatFilhos = no.getAltura(no.esq.dir) - no.getAltura(no.esq.esq);
-                if (fatFilhos == 1) {
-                    no.esq = rotacionarEsq(no.esq);
-                }
-                no = rotacionarDir(no);
-            } else {
-                throw new Exception("Erro ao balancear nó");
-            }
-        }
-        return no;
+    public NoAn rotacionarDirEsq(NoAn no) {
+        no.dir = rotacionarDir(no.dir);
+        return rotacionarEsq(no);
     }
 
-    public No balancear(No no) throws Exception {
-        if (no != null) {
-            int fator = no.getAltura(no.dir) - no.getAltura(no.esq);
-            if (Math.abs(fator) <= 1) {
-                no.setAltura();
-            } else if (fator == 2) {
-                switch (no.getAltura(no.dir.dir) - no.getAltura(no.dir.esq)) {
-                    case 1:
-                        no = rotacionarEsq(no);
-                        break;
-                    case 0:
-                        no = rotacionarEsq(no);
-                        break;
-                    case -1:
-                        no.dir = rotacionarDir(no.dir);
-                        no = rotacionarEsq(no);
-                        break;
-                    default:
-                        throw new Exception("Erro !");
-                }
-            } else if (fator == -2) {
-                switch (no.getAltura(no.esq.dir) - no.getAltura(no.esq.esq)) {
-                    case -1:
-                        no = rotacionarDir(no);
-                        break;
-                    case 0:
-                        no = rotacionarDir(no);
-                        break;
-                    case 1:
-                        no.esq = rotacionarEsq(no.esq);
-                        no = rotacionarDir(no);
-                        break;
-                    default:
-                        throw new Exception("Erro !");
-                }
-            } else {
-                throw new Exception("Erro ao balancear nó");
-            }
-        }
-        return no;
+    public NoAn rotacionarEsqDir(NoAn no) {
+        no.esq = rotacionarEsq(no.esq);
+        return rotacionarDir(no);
     }
 
     /**
@@ -1135,7 +1129,7 @@ class AVL {
 
 }
 
-public class Tp4Q03 {
+public class Tp4Q04 {
 
     private static boolean isFim(String entrada) {
         return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
@@ -1144,13 +1138,11 @@ public class Tp4Q03 {
     public static void main(String[] args) {
         try {
             ArrayList<String> entradas = new ArrayList<>();
-            ArrayList<String> removes = new ArrayList<>();
             ArrayList<String> pesquisas = new ArrayList<>();
-            String verificacoes[];
-            AVL arvore;
-            int n = 0, comp = 0;
+            ArvoreColorida arvore;
+            int comp = 0;
             double fim, inic;
-            String entrada = "", comando;
+            String entrada = "";
             MyIO.setCharset("UTF-8");
             do {
                 entrada = MyIO.readLine();
@@ -1158,13 +1150,6 @@ public class Tp4Q03 {
                     entradas.add(entrada);
                 }
             } while (!isFim(entrada));
-            n = MyIO.readInt();
-            verificacoes = new String[n];
-            // salvando comandos de verificação para serem executados
-            for (int i = 0; i < n; i++) {
-                verificacoes[i] = entrada = MyIO.readLine();
-            }
-
             do {
                 entrada = MyIO.readLine();
                 if (!isFim(entrada)) {
@@ -1173,27 +1158,12 @@ public class Tp4Q03 {
             } while (!isFim(entrada));
 
             // criação dos objetos de filme/leitura/impressao
-            arvore = new AVL();
+            arvore = new ArvoreColorida();
             inic = arvore.now();
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
                 arvore.inserir(filme);
             }
-
-            // executando comandos da pilha de acordo com a demanda
-            for (int i = 0; i < n; i++) {
-                comando = verificacoes[i];
-                // System.out.println(comando);
-                if (Ferramentas.myContains(comando, "I ")) {
-                    arvore.inserir(new Filme(Ferramentas.mySubstring(comando, 2, comando.length())));
-                } else if (Ferramentas.myContains(comando, "R ")) {
-                    Filme aux = arvore.pesquisar(Ferramentas.mySubstring(comando, 2, comando.length()));
-                    arvore.remover(aux);
-                    removes.add(aux.getTitulo());
-                    aux = null;
-                }
-            }
-
             for (String find : pesquisas) {
                 if (arvore.pesquisarDbg(find)) {
                     MyIO.print("SIM\n");
