@@ -55,7 +55,7 @@ class Ferramentas {
     public static boolean gerarLog(double inic, double fim, int comp) {
         boolean resp = true;
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_arvoreBinaria.txt"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_arvoreArvore.txt"));
             bw.write(getMatricula() + "\t" + (fim - inic) / 1000.0 + "\t" + comp);
             bw.close();
         } catch (IOException io) {
@@ -1000,25 +1000,25 @@ class ArvoreCaracteres {
 
     private void caminharCentral(No i) {
         if (i != null) {
-            caminharCentral(i.esq); // Elementos da esquerda.
-            System.out.print(i.elemento + " \n"); // Conteudo do no.
+            caminharCentral(i.esq);
+            System.out.print(i.elemento + " \n");
             caminharCentral(i.no2);
-            caminharCentral(i.dir); // Elementos da direita.
+            caminharCentral(i.dir);
         }
     }
 
     private void caminharCentral(No2 i) {
         if (i != null) {
-            caminharCentral(i.esq); // Elementos da esquerda.
-            System.out.print(i.chave + " \n"); // Conteudo do no.
-            caminharCentral(i.dir); // Elementos da direita.
+            caminharCentral(i.esq);
+            System.out.print(i.chave + " \n");
+            caminharCentral(i.dir);
         }
     }
 
     public void caminharPre(String x) {
         comp++;
-        System.out.println("=> " + x);
-        System.out.print("raiz ");
+        MyIO.println("=> " + x);
+        MyIO.print("raiz ");
         if (caminharPre(x, raiz)) {
             MyIO.print(" SIM\n");
         } else {
@@ -1035,11 +1035,13 @@ class ArvoreCaracteres {
                 return true;
             } else {
                 MyIO.print(" ESQ ");
+                comp++;
                 if (resp != true) {
-                    resp = caminharPre(x, i.esq); // Elementos da esquerda.
+                    resp = caminharPre(x, i.esq);
+                    comp++;
                     if (resp == false) {
                         MyIO.print(" DIR ");
-                        resp = caminharPre(x, i.dir); // Elementos da direita.
+                        resp = caminharPre(x, i.dir);
                     }
                 }
             }
@@ -1050,11 +1052,10 @@ class ArvoreCaracteres {
     public boolean pesquisarDbg2(String x, No2 i) {
         boolean resp = false;
         comp++;
-        if (i != null && x.charAt(0) == i.chave.charAt(0)) {
-        }
         if (i == null) {
             resp = false;
         } else if (x.equals(i.chave)) {
+            comp++;
             resp = true;
         } else if (Ferramentas.comparadorStr(x, i.chave) < 0) {
             MyIO.print("esq ");
@@ -1139,16 +1140,15 @@ public class Tp4Q02 {
                 }
             } while (!isFim(entrada));
 
-            // System.out.println("INSERT LETRAS");
-
             // Iniciando arvore 1 que contempla as letras
             arvore = new ArvoreCaracteres();
+            inic = arvore.now();
             String chars = "D, R, Z, X, V, B, F, P, U, I, G, E, J, L, H, T, A, W, S, O, M, N, K, C, Y, Q";
             chars = chars.replace(", ", "");
             for (int i = 0; i < chars.length(); i++) {
                 arvore.inserir(chars.charAt(i));
             }
-            inic = arvore.now();
+
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
                 arvore.inserir(filme);
