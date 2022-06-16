@@ -181,23 +181,6 @@ class ArvoreBinaria {
             imprimirNivel(i);
         }
     }
-	
-	public No rotacionarEsq(No no) {
-        No nodir = no.dir;
-        No noDirEsq = nodir.esq;
-        nodir.esq = no;
-        no.dir = noDirEsq;
-        return nodir;
-    }
-
-    public No rotacionarDir(No no) {
-        No noesq = no.esq;
-        No noEsqDir = noesq.dir;
-        noesq.dir = no;
-        no.esq = noEsqDir;
-        return noesq;
-    }
-
 
 }
 

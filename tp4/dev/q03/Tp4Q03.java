@@ -55,7 +55,7 @@ class Ferramentas {
     public static boolean gerarLog(double inic, double fim, int comp) {
         boolean resp = true;
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_arvoreBinaria.txt"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_avl.txt"));
             bw.write(getMatricula() + "\t" + (fim - inic) / 1000.0 + "\t" + comp);
             bw.close();
         } catch (IOException io) {
@@ -755,17 +755,17 @@ class Filme {
 class No {
     public No esq, dir;
     public Filme elemento;
-
-    public No() {
-        this.esq = null;
-        this.dir = null;
-        this.elemento = null;
-    }
+    public int altura;
 
     public No(Filme x) {
-        this.esq = null;
-        this.dir = null;
+        this(x, null, null, 0);
+    }
+
+    public No(Filme x, No esq, No dir, int altura) {
+        this.esq = esq;
+        this.dir = dir;
         this.elemento = x;
+        this.altura = altura;
     }
 
     public Filme getElemento() {
@@ -776,12 +776,26 @@ class No {
         this.elemento = elemento;
     }
 
+    public void setAltura() {
+        this.altura = 1 + Math.max(getAltura(esq), getAltura(dir));
+    }
+
+    public int getAltura(No no) {
+        int resp;
+        if (no == null) {
+            resp = 0;
+        } else {
+            resp = no.altura;
+        }
+        return resp;
+    }
+
 }
 
-class ArvoreBinaria {
+class AVL {
     No raiz;
 
-    public ArvoreBinaria() {
+    public AVL() {
         raiz = null;
     }
 
@@ -799,35 +813,7 @@ class ArvoreBinaria {
         } else {
             throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
         }
-        return no;
-    }
-
-    public void inserirPai(Filme x) throws Exception {
-        if (raiz == null) {
-            raiz = new No(x);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) < 0) {
-            inserirPai(x, raiz.esq, raiz);
-        } else if (Ferramentas.comparadorStr(x.getTitulo(), raiz.elemento.getTitulo()) > 0) {
-            inserirPai(x, raiz.dir, raiz);
-        } else {
-            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
-        }
-    }
-
-    private void inserirPai(Filme x, No no, No pai) throws Exception {
-        if (no == null) {
-            if (Ferramentas.comparadorStr(x.getTitulo(), pai.elemento.getTitulo()) < 0) {
-                pai.esq = new No(x);
-            } else {
-                pai.dir = new No(x);
-            }
-        } else if (Ferramentas.comparadorStr(no.elemento.getTitulo(), x.getTitulo()) < 0) {
-            inserirPai(x, no.esq, no);
-        } else if (Ferramentas.comparadorStr(no.elemento.getTitulo(), x.getTitulo()) > 0) {
-            inserirPai(x, no.dir, no);
-        } else {
-            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
-        }
+        return balancear(no);
     }
 
     private No getMaiorEsq(No i, No j) {
@@ -859,7 +845,7 @@ class ArvoreBinaria {
         } else {
             no.esq = getMaiorEsq(no, no.esq);
         }
-        return no;
+        return balancear(no);
     }
 
     public boolean pesquisar(Filme x) {
@@ -968,13 +954,13 @@ class ArvoreBinaria {
         return tam;
     }
 
-    public void imprimirNivel(int nivel) throws Exception {
+    public void imprimirNivel(int altura) throws Exception {
         if (raiz == null) {
             throw new Exception("Erro a arvore se encontra vazia");
-        } else if (nivel == 0) {
+        } else if (altura == 0) {
             System.out.println(raiz.elemento.getTitulo());
         } else {
-            imprimirNivel(raiz, 0, nivel);
+            imprimirNivel(raiz, 0, altura);
             System.out.println("");
         }
     }
@@ -1042,6 +1028,92 @@ class ArvoreBinaria {
         }
     }
 
+    public No rotacionarEsq(No no) {
+        No nodir = no.dir;
+        No noDirEsq = nodir.esq;
+        nodir.esq = no;
+        no.dir = noDirEsq;
+        no.setAltura();
+        nodir.setAltura();
+        return nodir;
+    }
+
+    public No rotacionarDir(No no) {
+        No noesq = no.esq;
+        No noEsqDir = noesq.dir;
+        noesq.dir = no;
+        no.esq = noEsqDir;
+        no.setAltura();
+        noesq.setAltura();
+        return noesq;
+    }
+
+    public No balancear2(No no) throws Exception {
+        if (no != null) {
+            int fator = no.getAltura(no.esq) - no.getAltura(no.dir);
+            if (Math.abs(fator) <= 1) {
+                no.setAltura();
+            } else if (fator == 2) {
+                int fatFilhos = no.getAltura(no.dir.dir) - no.getAltura(no.dir.esq);
+                if (fatFilhos == -1) {
+                    no.dir = rotacionarDir(no.dir);
+                }
+                no = rotacionarEsq(no);
+            } else if (fator == -2) {
+                int fatFilhos = no.getAltura(no.esq.dir) - no.getAltura(no.esq.esq);
+                if (fatFilhos == 1) {
+                    no.esq = rotacionarEsq(no.esq);
+                }
+                no = rotacionarDir(no);
+            } else {
+                throw new Exception("Erro ao balancear nó");
+            }
+        }
+        return no;
+    }
+
+    public No balancear(No no) throws Exception {
+        if (no != null) {
+            int fator = no.getAltura(no.esq) - no.getAltura(no.dir);
+            if (Math.abs(fator) <= 1) {
+                no.setAltura();
+            } else if (fator == 2) {
+                switch (no.getAltura(no.dir.dir) - no.getAltura(no.dir.esq)) {
+                    case 1:
+                        no = rotacionarEsq(no);
+                        break;
+                    case 0:
+                        no = rotacionarEsq(no);
+                        break;
+                    case -1:
+                        no.dir = rotacionarDir(no.dir);
+                        no = rotacionarEsq(no);
+                        break;
+                    default:
+                        throw new Exception("Erro !");
+                }
+            } else if (fator == -2) {
+                switch (no.getAltura(no.esq.dir) - no.getAltura(no.esq.esq)) {
+                    case -1:
+                        no = rotacionarDir(no);
+                        break;
+                    case 0:
+                        no = rotacionarDir(no);
+                        break;
+                    case 1:
+                        no.esq = rotacionarEsq(no.esq);
+                        no = rotacionarDir(no);
+                        break;
+                    default:
+                        throw new Exception("Erro !");
+                }
+            } else {
+                throw new Exception("Erro ao balancear nó");
+            }
+        }
+        return no;
+    }
+
     /**
      * Retorna o timestamp atual
      * 
@@ -1075,7 +1147,7 @@ public class Tp4Q03 {
             ArrayList<String> removes = new ArrayList<>();
             ArrayList<String> pesquisas = new ArrayList<>();
             String verificacoes[];
-            ArvoreBinaria arvore;
+            AVL arvore;
             int n = 0, comp = 0;
             double fim, inic;
             String entrada = "", comando;
@@ -1101,7 +1173,7 @@ public class Tp4Q03 {
             } while (!isFim(entrada));
 
             // criação dos objetos de filme/leitura/impressao
-            arvore = new ArvoreBinaria();
+            arvore = new AVL();
             inic = arvore.now();
             for (String ent : entradas) {
                 Filme filme = new Filme(ent);
