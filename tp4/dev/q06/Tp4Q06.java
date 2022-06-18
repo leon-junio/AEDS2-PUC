@@ -4,10 +4,6 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-//Classe de ferramentas desenvolvida por Leon Júnio
-//Essa classe substitui todos os métodos principais da
-//biblioteca String e ainda possuí alguns conversores de data
-//horas e demais funções
 class Ferramentas {
 
 	// MATRICULA COMO ALUNO DEFINIDA PARA USO INTERNO NO SISTEMA
@@ -17,14 +13,6 @@ class Ferramentas {
 		return matricula;
 	}
 
-	/**
-	 * Função que simula a String.replace() e a String.trim()
-	 * 
-	 * @param frase  Frase para ser formatada
-	 * @param antiga Char para ser alterado
-	 * @param nova   Novo char para ser adicionado
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
 	public static String myReplace(String frase, char antiga, char nova) {
 		String resp = "";
 		if (frase != null) {
@@ -32,7 +20,7 @@ class Ferramentas {
 				if (frase.charAt(i) == antiga) {
 					resp += nova;
 				} else {
-					// trim para remover espaços
+					// trim para remover espa?os
 					if (frase.charAt(i) != ' ') {
 						resp += frase.charAt(i);
 					}
@@ -42,13 +30,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que simula o indexOf da classe String
-	 * 
-	 * @param frase  para procurar o char
-	 * @param antiga Char para ser localizado
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
 	public static int myIndexOf(String frase, char letra) {
 		int resp = -1;
 		if (frase != null) {
@@ -62,12 +43,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que simula o trim da classe String
-	 * 
-	 * @param frase para remover os espaços e realizar formatação
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
 	public static String myTrim(String frase) {
 		String resp = "";
 		if (frase != null) {
@@ -80,14 +55,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que simula o Substring da classe String
-	 * 
-	 * @param frase para procurar a String interna
-	 * @param inic  index inicial
-	 * @param fim   index final
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
 	public static String mySubstring(String frase, int inic, int fim) {
 		String resp = "";
 		if (frase != null) {
@@ -100,14 +67,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que simula o Substring da classe String
-	 * 
-	 * @param frase para procurar a String interna
-	 * @param cInic char para localizar o index inicial
-	 * @param cFim  char para localizar o index final
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
 	public static String mySubstring(String frase, char cInic, char cFim) {
 		String resp = "";
 		if (frase != null) {
@@ -122,13 +81,10 @@ class Ferramentas {
 		return resp;
 	}
 
-	// Função responsavel por gerar o log contendo as informações de execução do
-	// código
-	// Tais como o tempo, comparações e minha matricula
 	public static boolean gerarLog(double inic, double fim, int comp) {
 		boolean resp = true;
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_sequencial.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(getMatricula() + "_hashRehash.txt"));
 			bw.write(getMatricula() + "\t" + (fim - inic) / 1000.0 + "\t" + comp);
 			bw.close();
 		} catch (IOException io) {
@@ -138,13 +94,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que simula a String.contains() para strings
-	 * 
-	 * @param frase Frase para ser verificada
-	 * @param ver   verificação que vai ser usada
-	 * @return Verdade ou falso de acordo com a verificação
-	 */
 	public static boolean myContains(String frase, String ver) {
 		boolean resp = false;
 		String aux = "";
@@ -177,8 +126,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	// Metodo de comparação de duas Strings e retorna sua igualdade em forma de
-	// boolean
 	public static boolean myEquals(String str1, String str2) {
 		boolean resp = false;
 		if (str1 != null && str2 != null) {
@@ -194,14 +141,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que simula a String.replace() para strings
-	 * 
-	 * @param frase  Frase para ser formatada
-	 * @param antiga String para ser alterado
-	 * @param nova   String para ser adicionado
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
 	public static String myReplace(String str, String str_old, String str_new) {
 		String resp = "", auxresp = "";
 		boolean eql = false;
@@ -243,13 +182,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que remove espaços do inicio de frases
-	 * 
-	 * @param frase Frase para ser formatada
-	 * @param end   char de condição final
-	 * @return Frase de expressao formatada e pronta para uso
-	 */
 	public static String inicioTrim(String line, char end) {
 		String resp = "";
 		boolean next = false;
@@ -268,13 +200,6 @@ class Ferramentas {
 			return resp;
 	}
 
-	/**
-	 * Função que remove tags e puxa tudo que esta entre elas
-	 * 
-	 * @param frase Frase para ser formatada sem as tags
-	 * @return Frase de expressao formatada e pronta para uso com TUDO que está fora
-	 *         das tags
-	 */
 	public static String removeTags(String line) {
 		String resp = "";
 		boolean next = false;
@@ -291,15 +216,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	/**
-	 * Função que remove tags e puxa tudo que esta entre elas e adiciona separadores
-	 * para palavras
-	 * 
-	 * @param frase Frase para ser formatada sem as tags
-	 * @param frase Separador para distribuir frases e etc
-	 * @return Frase de expressao formatada e pronta para uso com TUDO que está fora
-	 *         das tags
-	 */
 	public static String removeTags(String line, char separador) {
 		String resp = "";
 		int count = 0;
@@ -322,8 +238,6 @@ class Ferramentas {
 		return resp;
 	}
 
-	// Essa função retorna uma data em String convertida para o objeto de Date do
-	// Java
 	public static Date getData(String data) {
 		Date date = null;
 		if (data != null) {
@@ -338,10 +252,6 @@ class Ferramentas {
 		return date;
 	}
 
-	// funcao que remove letras e gera um horario em formato de minutos pronto para
-	// uso
-	// realizando o calculo automatico das horas se possível (Horas * 60 = horas em
-	// minutos)
 	public static int getMinutos(String linha) {
 		String hr = "", mn = "";
 		int conta = 0;
@@ -368,7 +278,6 @@ class Ferramentas {
 		return conta;
 	}
 
-	// Metodo responsavel por formatar uma nova entrada de data
 	public static String formatDate(Date dt) {
 		String resp = "";
 		try {
@@ -476,8 +385,6 @@ class Filme {
 	public Filme() {
 	}
 
-	// Função de clonagem de objeto para evitar erros de acesso de memoria e perda
-	// de dados
 	public Filme clonar() {
 		Filme dolly = new Filme();
 		dolly.setDuracao(getDuracao());
@@ -492,11 +399,6 @@ class Filme {
 		return dolly;
 	}
 
-	// Método que vai iniciar o objeto de Filme e realizar a pesquisa entre as
-	// linhas
-	// do arquivo atrás dos dados necessários para a extração. Esse método realiza
-	// vários
-	// whiles seguidos procurando por informações especificas dentro das linhas
 	private void ler(String entrada) {
 		try {
 			String line = "";
@@ -528,9 +430,9 @@ class Filme {
 			setDuracao(Integer.parseInt(tratarLinha(line, 3)));
 			line = buff.readLine();
 			boolean chk = false;
-			while (!Ferramentas.myContains(line, "Título original")) {
+			while (!Ferramentas.myContains(line, "T�tulo original")) {
 				line = buff.readLine();
-				if (Ferramentas.myContains(line, "<bdi>Situação</bdi>")) {
+				if (Ferramentas.myContains(line, "<bdi>Situa��o</bdi>")) {
 					setTitulo(getNome());
 					chk = true;
 					break;
@@ -540,7 +442,7 @@ class Filme {
 				setTitulo(tratarLinha(line, 4));
 				line = buff.readLine();
 			}
-			while (!Ferramentas.myContains(line, "Situação")) {
+			while (!Ferramentas.myContains(line, "Situa��o")) {
 				line = buff.readLine();
 			}
 			setSituacao(tratarLinha(line, 5));
@@ -550,7 +452,7 @@ class Filme {
 			}
 			setIdioma(tratarLinha(line, 6));
 			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "Orçamento")) {
+			while (!Ferramentas.myContains(line, "Or�amento")) {
 				line = buff.readLine();
 			}
 			setOrcamento(Float.parseFloat(tratarLinha(line, 7)));
@@ -574,13 +476,12 @@ class Filme {
 			System.err.println(io.getMessage());
 			io.printStackTrace();
 		} catch (Exception e) {
-			System.err.println("Erro desconhecido dentro da função de leitura: " + e.getMessage());
+			System.err.println("Erro desconhecido dentro da fun��o de leitura: " + e.getMessage());
 			e.printStackTrace();
 		}
 
 	}
 
-	// Método para imprimir as informações do objeto
 	public void imprimir() {
 		MyIO.print(getNome() + " ");
 		MyIO.print(getTitulo() + " ");
@@ -603,9 +504,6 @@ class Filme {
 		MyIO.println("");
 	}
 
-	// Metódo responsável por tratar uma linha e remover TAGS do html
-	// Essa linha filtra os dados e pega somente o bruto necessário
-	// Usando funções criadas dentro da classe de Ferramentas
 	private String tratarLinha(String linha, int op) {
 		String resp = "";
 		linha = Ferramentas.inicioTrim(linha, '<');
@@ -613,7 +511,7 @@ class Filme {
 		switch (op) {
 			case 1:
 				String locale = Ferramentas.mySubstring(linha, Ferramentas.myIndexOf(linha, '('),
-						Ferramentas.myIndexOf(linha, ')') + 1); // remoção do (BR) (US) etc
+						Ferramentas.myIndexOf(linha, ')') + 1);
 				linha = Ferramentas.myReplace(linha, " " + locale, " ");
 				resp = Ferramentas.myTrim(linha);
 				break;
@@ -633,18 +531,18 @@ class Filme {
 				resp = "" + Ferramentas.getMinutos(linha);
 				break;
 			case 4:
-				resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>Título original</strong> ", "");
+				resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>T�tulo original</strong> ", "");
 				resp = Ferramentas.myReplace(resp, "</p>", "");
 				break;
 			case 5:
-				resp = Ferramentas.myReplace(linha, "<strong><bdi>Situação</bdi></strong> ", "");
+				resp = Ferramentas.myReplace(linha, "<strong><bdi>Situa��o</bdi></strong> ", "");
 				break;
 			case 6:
 				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Idioma original</bdi></strong> ", "");
 				resp = Ferramentas.myReplace(resp, "</p>", "");
 				break;
 			case 7:
-				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Orçamento</bdi></strong> ", "");
+				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Or�amento</bdi></strong> ", "");
 				resp = Ferramentas.myReplace(resp, "</p>", "");
 				if (Ferramentas.myContains(linha, "-")) {
 					resp = "0.0";
@@ -667,14 +565,12 @@ class Filme {
 		return resp;
 	}
 
-	// Função que retorna um arquivo de html para poder ser realizado as consultas e
-	// extração de dados
 	private File getFile(String name) throws IOException {
 		File file;
-		// file = new File("/tmp/filmes/" + name);
-		file = new File("../tmp/filmes/" + name);
+		file = new File("/tmp/filmes/" + name);
+		// file = new File("../tmp/filmes/" + name);
 		if (!file.isFile()) {
-			throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
+			throw new IOException("O arquivo nao foi encontrado na pasta tmp arquivo:" + name);
 		} else {
 			return file;
 		}
@@ -687,26 +583,45 @@ class HashList {
 	// Posso usar essa classe para instanciar as filas, pilhas e listas
 
 	public HashList() {
-		this(30, 9);
+		this(21);
 	}
 
-	public HashList(int num, int reserva) {
-		this.reserva = reserva;
+	public HashList(int num) {
 		filmes = new Filme[num];
 	}
 
 	private Filme[] filmes;
-	private int reserva = 0, totRes = 0;
 
 	public void inserir(Filme obj) {
 		int hash = 0;
 		for (char lt : obj.getTitulo().toCharArray()) {
 			hash += (int) lt;
 		}
-		hash = hash % 21;
-		System.out.println(obj.getTitulo());
-		System.out.println(hash);
-		filmes[hash] = obj;
+		hash = hash(obj.getTitulo());
+		if (filmes[hash] == null) {
+			filmes[hash] = obj;
+		} else {
+			hash = reHash(obj.getTitulo());
+			if (filmes[hash] == null) {
+				filmes[hash] = obj;
+			}
+		}
+	}
+
+	private int hash(String frase) {
+		int hash = 0;
+		for (char lt : frase.toCharArray()) {
+			hash += (int) lt;
+		}
+		return hash % filmes.length;
+	}
+
+	private int reHash(String frase) {
+		int hash = 1;
+		for (char lt : frase.toCharArray()) {
+			hash += (int) lt;
+		}
+		return hash % filmes.length;
 	}
 
 	public void imprimir() {
@@ -734,29 +649,24 @@ class HashList {
 		return this.comp;
 	}
 
-	/*
-	 * Pesquisa sequencial dentro da lista de filmes percorrendo o vetor até
-	 * encontrar a String desejada
-	 * Caso encontre ele para a execução do for para ganhar mais performance e no
-	 * pior caso vai realizar
-	 * todas as n comparações até encontrar o resultado
-	 */
 	public boolean findSequencial(String nome) {
 		boolean resp = false;
 		int comp = 0;
 		int hash = 0;
-		for (char lt : nome.toCharArray()) {
-			hash += (int) lt;
-		}
-		hash = hash % 21;
+		hash = hash(nome);
 		comp++;
-		if (filmes[hash] != null) {
-			if (filmes[hash].getTitulo().equals(nome)) {
+		if (filmes[hash] != null && filmes[hash].getTitulo().equals(nome)) {
+			MyIO.println("Posicao: " + hash);
+			resp = true;
+		} else {
+			// System.out.println("verificando");
+			resp = false;
+			hash = reHash(nome);
+			comp++;
+			if (filmes[hash] != null && filmes[hash].getTitulo().equals(nome)) {
 				MyIO.println("Posicao: " + hash);
 				resp = true;
 			}
-		} else {
-			resp = false;
 		}
 		setComp(comp);
 		return resp;
@@ -764,7 +674,7 @@ class HashList {
 
 }
 
-public class Tp4Q5 {
+public class Tp4Q06 {
 
 	private static boolean isFim(String entrada) {
 		return entrada.length() == 3 && Ferramentas.myEquals(entrada, "FIM");
@@ -790,14 +700,13 @@ public class Tp4Q5 {
 				verificacoes.add(entrada);
 			}
 		} while (!isFim(entrada));
-		// criação dos objetos de filme/leitura/impressao
+
 		lista = new HashList();
 		for (String ent : entradas) {
 			Filme filme = new Filme(ent);
 			lista.inserir(filme);
 		}
 
-		System.out.println("PESQUISANDO -----------------------------------");
 		// procurando sequencialmente
 		inic = lista.now();
 		for (String ver : verificacoes) {

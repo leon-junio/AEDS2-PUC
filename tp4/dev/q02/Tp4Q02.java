@@ -6,10 +6,10 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-//Classe de ferramentas desenvolvida por Leon JÃºnio
-//Essa classe substitui todos os mÃ©todos principais da
-//biblioteca String e ainda possuÃ­ alguns conversores de data
-//horas e demais funÃ§Ãµes
+//Classe de ferramentas desenvolvida por Leon Júnio
+//Essa classe substitui todos os métodos principais da
+//biblioteca String e ainda possuí alguns conversores de data
+//horas e demais funções
 class Ferramentas {
 
     // MATRICULA COMO ALUNO DEFINIDA PARA USO INTERNO NO SISTEMA
@@ -19,10 +19,10 @@ class Ferramentas {
         return matricula;
     }
 
-    // FunÃ§Ã£o que checa se uma String Ã© antes ou depois de outra String
-    // Gerando assim uma verificaÃ§Ã£o de ordem alfabÃ©tica
+    // Função que checa se uma String é antes ou depois de outra String
+    // Gerando assim uma verificação de ordem alfabética
     // frase --> String que vai ser comparada com outra
-    // ver --> String que vai ser usada como comparaÃ§Ã£o
+    // ver --> String que vai ser usada como comparação
     public static boolean isStrMaior(String frase, String ver) {
         boolean resp = false;
         for (int i = 0; i < ver.length(); i++) {
@@ -43,7 +43,7 @@ class Ferramentas {
         return resp;
     }
 
-    // FunÃ§Ã£o para comparar Strings e retornar um inteiro
+    // Função para comparar Strings e retornar um inteiro
     // retorna > 1 se a str1 for maior que a str2
     // retorna < 1 se a str1 for menor que a str2
     // retorna == 0 se a str1 for igual a str2
@@ -51,9 +51,9 @@ class Ferramentas {
         return str.compareTo(str2);
     }
 
-    // FunÃ§Ã£o responsavel por gerar o log contendo as informaÃ§Ãµes de execuÃ§Ã£o do
-    // cÃ³digo
-    // Tais como o tempo, comparaÃ§Ãµes e minha matricula
+    // Função responsavel por gerar o log contendo as informações de execução do
+    // código
+    // Tais como o tempo, comparações e minha matricula
     public static boolean gerarLog(double inic, double fim, int comp) {
         boolean resp = true;
         try {
@@ -67,8 +67,8 @@ class Ferramentas {
         return resp;
     }
 
-    // FunÃ§Ã£o para ler entre espaÃ§os dentro de uma frase
-    // No maximo dois espaÃ§os
+    // Função para ler entre espaços dentro de uma frase
+    // No maximo dois espaços
     public static String lerEntreSpaces(String frase) {
         String resp = "";
         boolean check = false;
@@ -87,7 +87,7 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que simula a String.replace() e a String.trim()
+     * Função que simula a String.replace() e a String.trim()
      * 
      * @param frase  Frase para ser formatada
      * @param antiga Char para ser alterado
@@ -101,7 +101,7 @@ class Ferramentas {
                 if (frase.charAt(i) == antiga) {
                     resp += nova;
                 } else {
-                    // trim para remover espaÃ§os
+                    // trim para remover espaços
                     if (frase.charAt(i) != ' ') {
                         resp += frase.charAt(i);
                     }
@@ -112,7 +112,7 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que simula o indexOf da classe String
+     * Função que simula o indexOf da classe String
      * 
      * @param frase  para procurar o char
      * @param antiga Char para ser localizado
@@ -132,9 +132,9 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que simula o trim da classe String
+     * Função que simula o trim da classe String
      * 
-     * @param frase para remover os espaÃ§os e realizar formataÃ§Ã£o
+     * @param frase para remover os espaços e realizar formatação
      * @return Frase de expressao formatada e pronta para uso
      */
     public static String myTrim(String frase) {
@@ -150,7 +150,7 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que simula o Substring da classe String
+     * Função que simula o Substring da classe String
      * 
      * @param frase para procurar a String interna
      * @param inic  index inicial
@@ -170,7 +170,7 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que simula o Substring da classe String
+     * Função que simula o Substring da classe String
      * 
      * @param frase para procurar a String interna
      * @param cInic char para localizar o index inicial
@@ -191,9 +191,9 @@ class Ferramentas {
         return resp;
     }
 
-    // FunÃ§Ã£o responsavel por gerar o log contendo as informaÃ§Ãµes de execuÃ§Ã£o do
-    // cÃ³digo
-    // Tais como o tempo, comparaÃ§Ãµes e minha matricula
+    // Função responsavel por gerar o log contendo as informações de execução do
+    // código
+    // Tais como o tempo, comparações e minha matricula
     public static boolean gerarLog(double inic, double fim, int comp, int mov, String txt) {
         boolean resp = true;
         try {
@@ -208,11 +208,11 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que simula a String.contains() para strings
+     * Função que simula a String.contains() para strings
      * 
      * @param frase Frase para ser verificada
-     * @param ver   verificaÃ§Ã£o que vai ser usada
-     * @return Verdade ou falso de acordo com a verificaÃ§Ã£o
+     * @param ver   verificação que vai ser usada
+     * @return Verdade ou falso de acordo com a verificação
      */
     public static boolean myContains(String frase, String ver) {
         boolean resp = false;
@@ -246,7 +246,7 @@ class Ferramentas {
         return resp;
     }
 
-    // Metodo de comparaÃ§Ã£o de duas Strings e retorna sua igualdade em forma de
+    // Metodo de comparação de duas Strings e retorna sua igualdade em forma de
     // boolean
     public static boolean myEquals(String str1, String str2) {
         boolean resp = false;
@@ -264,7 +264,7 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que simula a String.replace() para strings
+     * Função que simula a String.replace() para strings
      * 
      * @param frase  Frase para ser formatada
      * @param antiga String para ser alterado
@@ -313,10 +313,10 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que remove espaÃ§os do inicio de frases
+     * Função que remove espaços do inicio de frases
      * 
      * @param frase Frase para ser formatada
-     * @param end   char de condiÃ§Ã£o final
+     * @param end   char de condição final
      * @return Frase de expressao formatada e pronta para uso
      */
     public static String inicioTrim(String line, char end) {
@@ -338,10 +338,10 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que remove tags e puxa tudo que esta entre elas
+     * Função que remove tags e puxa tudo que esta entre elas
      * 
      * @param frase Frase para ser formatada sem as tags
-     * @return Frase de expressao formatada e pronta para uso com TUDO que estÃ¡ fora
+     * @return Frase de expressao formatada e pronta para uso com TUDO que está fora
      *         das tags
      */
     public static String removeTags(String line) {
@@ -361,12 +361,12 @@ class Ferramentas {
     }
 
     /**
-     * FunÃ§Ã£o que remove tags e puxa tudo que esta entre elas e adiciona separadores
+     * Função que remove tags e puxa tudo que esta entre elas e adiciona separadores
      * para palavras
      * 
      * @param frase Frase para ser formatada sem as tags
      * @param frase Separador para distribuir frases e etc
-     * @return Frase de expressao formatada e pronta para uso com TUDO que estÃ¡ fora
+     * @return Frase de expressao formatada e pronta para uso com TUDO que está fora
      *         das tags
      */
     public static String removeTags(String line, char separador) {
@@ -391,7 +391,7 @@ class Ferramentas {
         return resp;
     }
 
-    // Essa funÃ§Ã£o retorna uma data em String convertida para o objeto de Date do
+    // Essa função retorna uma data em String convertida para o objeto de Date do
     // Java
     public static Date getData(String data) {
         Date date = null;
@@ -409,7 +409,7 @@ class Ferramentas {
 
     // funcao que remove letras e gera um horario em formato de minutos pronto para
     // uso
-    // realizando o calculo automatico das horas se possÃ­vel (Horas * 60 = horas em
+    // realizando o calculo automatico das horas se possível (Horas * 60 = horas em
     // minutos)
     public static int getMinutos(String linha) {
         String hr = "", mn = "";
@@ -549,7 +549,7 @@ class Filme {
     public Filme() {
     }
 
-    // FunÃ§Ã£o de clonagem de objeto para evitar erros de acesso de memoria e perda
+    // Função de clonagem de objeto para evitar erros de acesso de memoria e perda
     // de dados
     public Filme clonar() {
         Filme dolly = new Filme();
@@ -565,11 +565,11 @@ class Filme {
         return dolly;
     }
 
-    // MÃ©todo que vai iniciar o objeto de Filme e realizar a pesquisa entre as
+    // Método que vai iniciar o objeto de Filme e realizar a pesquisa entre as
     // linhas
-    // do arquivo atrÃ¡s dos dados necessÃ¡rios para a extraÃ§Ã£o. Esse mÃ©todo realiza
-    // vÃ¡rios
-    // whiles seguidos procurando por informaÃ§Ãµes especificas dentro das linhas
+    // do arquivo atrás dos dados necessários para a extração. Esse método realiza
+    // vários
+    // whiles seguidos procurando por informações especificas dentro das linhas
     private void ler(String entrada) {
         try {
             String line = "";
@@ -601,9 +601,9 @@ class Filme {
             setDuracao(Integer.parseInt(tratarLinha(line, 3)));
             line = buff.readLine();
             boolean chk = false;
-            while (!Ferramentas.myContains(line, "TÃ­tulo original")) {
+            while (!Ferramentas.myContains(line, "Título original")) {
                 line = buff.readLine();
-                if (Ferramentas.myContains(line, "<bdi>SituaÃ§Ã£o</bdi>")) {
+                if (Ferramentas.myContains(line, "<bdi>Situação</bdi>")) {
                     setTitulo(getNome());
                     chk = true;
                     break;
@@ -613,7 +613,7 @@ class Filme {
                 setTitulo(tratarLinha(line, 4));
                 line = buff.readLine();
             }
-            while (!Ferramentas.myContains(line, "SituaÃ§Ã£o")) {
+            while (!Ferramentas.myContains(line, "Situação")) {
                 line = buff.readLine();
             }
             setSituacao(tratarLinha(line, 5));
@@ -623,7 +623,7 @@ class Filme {
             }
             setIdioma(tratarLinha(line, 6));
             line = buff.readLine();
-            while (!Ferramentas.myContains(line, "OrÃ§amento")) {
+            while (!Ferramentas.myContains(line, "Orçamento")) {
                 line = buff.readLine();
             }
             setOrcamento(Float.parseFloat(tratarLinha(line, 7)));
@@ -647,13 +647,13 @@ class Filme {
             System.err.println(io.getMessage());
             io.printStackTrace();
         } catch (Exception e) {
-            System.err.println("Erro desconhecido dentro da funÃ§Ã£o de leitura: " + e.getMessage());
+            System.err.println("Erro desconhecido dentro da função de leitura: " + e.getMessage());
             e.printStackTrace();
         }
 
     }
 
-    // MÃ©todo para imprimir as informaÃ§Ãµes do objeto
+    // Método para imprimir as informações do objeto
     public void imprimir() {
         MyIO.print(getNome() + " ");
         MyIO.print(getTitulo() + " ");
@@ -676,9 +676,9 @@ class Filme {
         MyIO.println("");
     }
 
-    // MetÃ³do responsÃ¡vel por tratar uma linha e remover TAGS do html
-    // Essa linha filtra os dados e pega somente o bruto necessÃ¡rio
-    // Usando funÃ§Ãµes criadas dentro da classe de Ferramentas
+    // Metódo responsável por tratar uma linha e remover TAGS do html
+    // Essa linha filtra os dados e pega somente o bruto necessário
+    // Usando funções criadas dentro da classe de Ferramentas
     private String tratarLinha(String linha, int op) {
         String resp = "";
         linha = Ferramentas.inicioTrim(linha, '<');
@@ -686,7 +686,7 @@ class Filme {
         switch (op) {
             case 1:
                 String locale = Ferramentas.mySubstring(linha, Ferramentas.myIndexOf(linha, '('),
-                        Ferramentas.myIndexOf(linha, ')') + 1); // remoÃ§Ã£o do (BR) (US) etc
+                        Ferramentas.myIndexOf(linha, ')') + 1); // remoção do (BR) (US) etc
                 linha = Ferramentas.myReplace(linha, " " + locale, " ");
                 resp = Ferramentas.myTrim(linha);
                 break;
@@ -706,18 +706,18 @@ class Filme {
                 resp = "" + Ferramentas.getMinutos(linha);
                 break;
             case 4:
-                resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>TÃ­tulo original</strong> ", "");
+                resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>Título original</strong> ", "");
                 resp = Ferramentas.myReplace(resp, "</p>", "");
                 break;
             case 5:
-                resp = Ferramentas.myReplace(linha, "<strong><bdi>SituaÃ§Ã£o</bdi></strong> ", "");
+                resp = Ferramentas.myReplace(linha, "<strong><bdi>Situação</bdi></strong> ", "");
                 break;
             case 6:
                 resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Idioma original</bdi></strong> ", "");
                 resp = Ferramentas.myReplace(resp, "</p>", "");
                 break;
             case 7:
-                resp = Ferramentas.myReplace(linha, "<p><strong><bdi>OrÃ§amento</bdi></strong> ", "");
+                resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Orçamento</bdi></strong> ", "");
                 resp = Ferramentas.myReplace(resp, "</p>", "");
                 if (Ferramentas.myContains(linha, "-")) {
                     resp = "0.0";
@@ -739,14 +739,14 @@ class Filme {
         return resp;
     }
 
-    // FunÃ§Ã£o que retorna um arquivo de html para poder ser realizado as consultas e
-    // extraÃ§Ã£o de dados
+    // Função que retorna um arquivo de html para poder ser realizado as consultas e
+    // extração de dados
     private File getFile(String name) throws IOException {
         File file;
         file = new File("/tmp/filmes/" + name);
         // file = new File("../tmp/filmes/" + name);
         if (!file.isFile()) {
-            throw new IOException("O arquivo nÃ£o foi encontrado na pasta tmp arquivo:" + name);
+            throw new IOException("O arquivo não foi encontrado na pasta tmp arquivo:" + name);
         } else {
             return file;
         }
@@ -834,7 +834,7 @@ class ArvoreCaracteres {
             comp++;
             no.dir = inserir(x, no.dir);
         } else {
-            throw new Exception("Erro o elemento informado jÃ¡ foi adicionado na arvore! -> " + x);
+            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
         }
         return no;
     }
@@ -858,7 +858,7 @@ class ArvoreCaracteres {
     private No inserir(Filme x, No no) throws Exception {
         if (no == null) {
             comp++;
-            throw new Exception("Erro o elemento Ã© nulo");
+            throw new Exception("Erro o elemento é nulo");
         } else if (x.getTitulo().charAt(0) < no.elemento) {
             comp++;
             no.esq = inserir(x, no.esq);
@@ -883,7 +883,7 @@ class ArvoreCaracteres {
             comp++;
             no.dir = inserir(x, no.dir);
         } else {
-            throw new Exception("Erro o elemento informado jÃ¡ foi adicionado na arvore! -> " + x);
+            throw new Exception("Erro o elemento informado já foi adicionado na arvore! -> " + x);
         }
         return no;
     }
@@ -891,7 +891,7 @@ class ArvoreCaracteres {
     private No getMaiorEsq(No i, No j) {
         if (j.dir == null) {
             i.elemento = j.elemento;
-            j = j.esq; // ao remover a gente pega o elemento na direita e conecta no nÃ³ removido
+            j = j.esq; // ao remover a gente pega o elemento na direita e conecta no nó removido
             // pode ser null ou uma outra subarvore e vai se conectar normalmente
         } else {
             j.dir = getMaiorEsq(i, j.dir); // se o elemento da direita nao for nulo continua indo ate encontrar
@@ -905,7 +905,7 @@ class ArvoreCaracteres {
 
     private No remover(char x, No no) throws Exception {
         if (no == null) {
-            throw new Exception("NÃ³ nulo encontrado erro ao remover nÂ°: " + x);
+            throw new Exception("Nó nulo encontrado erro ao remover n°: " + x);
         } else if (x < no.elemento) {
             no.esq = remover(x, no.esq);
         } else if (x > no.elemento) {
@@ -1135,7 +1135,7 @@ public class Tp4Q02 {
             n = scan.nextInt();
             scan.next();
             verificacoes = new String[n];
-            // salvando comandos de verificaÃ§Ã£o para serem executados
+            // salvando comandos de verificação para serem executados
             for (int i = 0; i < n; i++) {
                 verificacoes[i] = entrada = scan.nextLine();
             }
@@ -1173,7 +1173,7 @@ public class Tp4Q02 {
             fim = arvore.now();
             Ferramentas.gerarLog(inic, fim, comp);
         } catch (Exception e) {
-            System.out.println("Um erro ocorreu durante a execuÃ§Ã£o do cÃ³digo\n" +
+            System.out.println("Um erro ocorreu durante a execução do código\n" +
                     "Erro reportado no main --> " + e.getMessage() + " -- " + e.getLocalizedMessage());
             e.printStackTrace();
         }
