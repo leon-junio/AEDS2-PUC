@@ -1,0 +1,93 @@
+inserir(int x){
+    if(raiz == null){
+        raiz = new No(x);
+    }else if(raiz.esq == null && raiz.dir == null){
+        if(x > raiz.elemento){
+            raiz.dir = new No(x);
+        }else{
+            raiz.esq = new No(x);
+        }
+    }else if(raiz.esq == null){
+        if(x < raiz.elemento){
+            raiz.esq = new No(x);
+        }else if(x < raiz.dir.elemento){
+            raiz.esq = new No(raiz.elemento);
+            raiz.elemento = x;
+        }else{
+            raiz.esq = new No(raiz.elemento);
+            raiz.elemento = raiz.dir.elemento;
+            raiz.dir.elemento = x;
+        }
+    }else if(raiz.dir == null){
+        if(raiz.elemento < x){
+            raiz.dir = new No(x);
+        }else if(x < raiz.esq.elemento){
+            raiz.dir = new No(raiz.elemento);
+            raiz.elemento = x;
+        }else{
+            raiz.dir = new No(raiz.elemento);
+            raiz.elemento = raiz.esq.elemento;
+            raiz.esq.elemento = x;
+        }
+    }else{
+        inserir(x,null,null,null,raiz);
+    }
+    raiz.cor = false;
+}
+
+
+inserir(){
+    if(i == null){
+        if(elemento < pai.elemento){
+            i = pai.esq = new No(x,true);
+        }else{
+            i = pai.dir = new No(x,true);
+        }
+        if(pai.cor == true){
+            balancear(bisavo,avo,pai,i);
+        }
+    }else{
+        if(isNoTipo4(i)){
+            i = fragmentarTipo4(i);
+            if(i == raiz){
+                i.cor = false;
+            }else if(pai.cor == true){
+                balancear(bisavo,avo,pai,i);
+            }
+        }
+        if(elemento < i.elemento){
+            inserir(x,avo,pai,i,i.esq);
+        }else if(elemento > i.elemento){
+            inserir(x,avo,pai,i,i.dir);
+        }else{
+            sout("ERRO ele ==");
+        }
+    }
+}
+
+balancear(no bisavo, no avo, no pai, no filho){
+if(pai.cor == true){
+if(avo.elemento < pai.elemento){
+    if(pai.elemento < filho.elemento){
+         avo = rotEsq(avo);
+    }else{
+        avo = rotDirEsq(avo);
+    }
+}else{
+    if(pai.elemento > filho.elemento){
+       avo = rotDir(avo);
+    }else{
+       avo = rotEsqDir(avo);
+    }
+}
+
+if(bisavo == false){
+    raiz = avo;
+}else if(bisavo.elemento > avo.elemento){
+bisavo.esq = avo;
+}else{
+    bisavo.dir = avo;
+}
+inverterCores(avo);
+}
+}

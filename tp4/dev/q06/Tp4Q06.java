@@ -632,7 +632,7 @@ class HashList {
 
 	/**
 	 * Retorna o timestamp atual
-	 * 
+	 *
 	 * @return timestamp atual
 	 */
 	public long now() {

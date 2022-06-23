@@ -430,9 +430,9 @@ class Filme {
 			setDuracao(Integer.parseInt(tratarLinha(line, 3)));
 			line = buff.readLine();
 			boolean chk = false;
-			while (!Ferramentas.myContains(line, "Tï¿½tulo original")) {
+			while (!Ferramentas.myContains(line, "Título original")) {
 				line = buff.readLine();
-				if (Ferramentas.myContains(line, "<bdi>Situaï¿½ï¿½o</bdi>")) {
+				if (Ferramentas.myContains(line, "<bdi>Situação</bdi>")) {
 					setTitulo(getNome());
 					chk = true;
 					break;
@@ -442,7 +442,7 @@ class Filme {
 				setTitulo(tratarLinha(line, 4));
 				line = buff.readLine();
 			}
-			while (!Ferramentas.myContains(line, "Situaï¿½ï¿½o")) {
+			while (!Ferramentas.myContains(line, "Situação")) {
 				line = buff.readLine();
 			}
 			setSituacao(tratarLinha(line, 5));
@@ -452,7 +452,7 @@ class Filme {
 			}
 			setIdioma(tratarLinha(line, 6));
 			line = buff.readLine();
-			while (!Ferramentas.myContains(line, "Orï¿½amento")) {
+			while (!Ferramentas.myContains(line, "Orçamento")) {
 				line = buff.readLine();
 			}
 			setOrcamento(Float.parseFloat(tratarLinha(line, 7)));
@@ -476,7 +476,7 @@ class Filme {
 			System.err.println(io.getMessage());
 			io.printStackTrace();
 		} catch (Exception e) {
-			System.err.println("Erro desconhecido dentro da Funï¿½ï¿½o de leitura: " + e.getMessage());
+			System.err.println("Erro desconhecido dentro da Funcao de leitura: " + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -531,18 +531,18 @@ class Filme {
 				resp = "" + Ferramentas.getMinutos(linha);
 				break;
 			case 4:
-				resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>Tï¿½tulo original</strong> ", "");
+				resp = Ferramentas.myReplace(linha, "<p class=\"wrap\"><strong>Título original</strong> ", "");
 				resp = Ferramentas.myReplace(resp, "</p>", "");
 				break;
 			case 5:
-				resp = Ferramentas.myReplace(linha, "<strong><bdi>Situaï¿½ï¿½o</bdi></strong> ", "");
+				resp = Ferramentas.myReplace(linha, "<strong><bdi>Situação</bdi></strong> ", "");
 				break;
 			case 6:
 				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Idioma original</bdi></strong> ", "");
 				resp = Ferramentas.myReplace(resp, "</p>", "");
 				break;
 			case 7:
-				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Orï¿½amento</bdi></strong> ", "");
+				resp = Ferramentas.myReplace(linha, "<p><strong><bdi>Orçamento</bdi></strong> ", "");
 				resp = Ferramentas.myReplace(resp, "</p>", "");
 				if (Ferramentas.myContains(linha, "-")) {
 					resp = "0.0";

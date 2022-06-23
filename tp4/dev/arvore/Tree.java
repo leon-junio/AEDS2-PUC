@@ -95,13 +95,13 @@ class ArvoreBinaria {
         if (no == null) {
             throw new Exception("Nó nulo encontrado erro ao remover n°: " + x);
         } else if (x < no.elemento) {
-            no = remover(x, no.esq);
+            no.esq = remover(x, no.esq);
         } else if (x > no.elemento) {
-            no = remover(x, no.dir);
+            no.dir = remover(x, no.dir);
         } else if (no.dir == null) {
-            no = no.dir;
-        } else if (no.esq == null) {
             no = no.esq;
+        } else if (no.esq == null) {
+            no = no.dir;
         } else {
             no = getMaiorEsq(no, no.esq);
         }
@@ -181,8 +181,8 @@ class ArvoreBinaria {
             imprimirNivel(i);
         }
     }
-	
-	public No rotacionarEsq(No no) {
+
+    public No rotacionarEsq(No no) {
         No nodir = no.dir;
         No noDirEsq = nodir.esq;
         nodir.esq = no;
@@ -197,7 +197,6 @@ class ArvoreBinaria {
         no.esq = noEsqDir;
         return noesq;
     }
-
 
 }
 
