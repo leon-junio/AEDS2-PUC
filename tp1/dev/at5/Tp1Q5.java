@@ -13,13 +13,14 @@ class Tp1Q5 {
 		String values = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for (int i = 0; i < valores.length; i++) {
 			String num = "" + valores[i];
-			exp = myReplace(exp, ((char) values.charAt(i)), num.charAt(0));
+			exp = myReplace(exp,   ((char) values.charAt(i))  , num.charAt(0)  );
 		}
 		if (scanString(exp)) {
 			return 1;
 		} else {
 			return 0;
 		}
+
 	}
 
 	/**
@@ -40,7 +41,6 @@ class Tp1Q5 {
 						if (txt.charAt(i) == '0') {
 							resp = "0";
 							i = txt.length();
-							break;
 						}
 					}
 					i++;
@@ -51,11 +51,9 @@ class Tp1Q5 {
 						if (txt.charAt(i) == '0') {
 							resp = "1";
 							i = txt.length();
-							break;
 						} else if (txt.charAt(i) == '1') {
 							resp = "0";
 							i = txt.length();
-							break;
 						}
 					}
 					i++;
@@ -67,7 +65,6 @@ class Tp1Q5 {
 						if (txt.charAt(i) == '1') {
 							resp = "1";
 							i = txt.length();
-							break;
 						}
 					}
 					i++;
@@ -91,46 +88,61 @@ class Tp1Q5 {
 	public static boolean scanString(String expressao) {
 		int index = 0, count = 0;
 		String contaBkp = "", lixo = "", contaAtual = "", letraFinal = "";
-		boolean isFinal = false;
+		boolean temPar = false;
 		while (true) {
 			if (expressao.charAt(index) == '(') {
 				for (int j = index + 1; j < expressao.length(); j++) {
 					if (expressao.charAt(j) == '(') {
-						isFinal = true;
+						temPar = true;
 					}
 				}
-				if (isFinal) {
+				if (temPar) {
 					contaBkp += expressao.charAt(index);
-					isFinal = false;
+					temPar = false;
 				} else {
 					index++;
+
 					while (expressao.charAt(index) != ')') {
 						contaAtual += expressao.charAt(index);
 						index++;
 					}
+					// tira a ultima operação booleana da conta de backup
 					count = contaBkp.length() - 1;
 					letraFinal = "" + contaBkp.charAt(count);
+					//armazeno a letra final dessa operação
 					if (contaBkp.charAt(count) == 'd') {
 						count = contaBkp.length() - 3;
 					} else if (contaBkp.charAt(count) == 't') {
+
 						count = contaBkp.length() - 3;
+
 					} else if (contaBkp.charAt(count) == 'r') {
 						count = contaBkp.length() - 2;
 					}
+					//
 					for (int i = 0; i < count; i++) {
 						lixo += contaBkp.charAt(i);
 					}
 					letraFinal += contaAtual;
+					//t0
+					//d1,1
+					//r0,1
 					contaAtual = letraFinal;
 					contaBkp = lixo;
+
 					contaBkp += verificar(contaAtual);
+					
 					contaAtual = "";
 					lixo = "";
 					letraFinal = "";
+
 				}
 			} else {
+				//and(not(0),1)
 				contaBkp += expressao.charAt(index);
 			}
+
+
 			if (index == expressao.length() - 1) {
 				expressao = contaBkp;
 				contaBkp = "";
@@ -138,6 +150,7 @@ class Tp1Q5 {
 			} else {
 				index++;
 			}
+
 			if (expressao.length() == 1) {
 				if (expressao.charAt(0) == '0') {
 					return false;
@@ -162,6 +175,7 @@ class Tp1Q5 {
 			if (frase.charAt(i) == antiga) {
 				resp += nova;
 			} else {
+				frase.trim();
 				// trim para remover espaços
 				if (frase.charAt(i) != ' ') {
 					resp += frase.charAt(i);
@@ -175,6 +189,8 @@ class Tp1Q5 {
 		String resp = "";
 		int j = 0;
 		for (int i = 0; i < frase.length(); i++) {
+			//frase and(0)
+			//antiga and
 			if (frase.charAt(i) == antiga.charAt(j)) {
 				if (j == antiga.length() - 1) {
 					resp += nova;

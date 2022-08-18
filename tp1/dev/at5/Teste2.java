@@ -23,43 +23,6 @@ class Teste2{
         return resp;
     }
 
-    // public static String replace(String frase, String antiga, String nova) {
-    //     String resp = "", aux = "";
-    //     int j = 0;
-    //     for (int i = 0; i < frase.length(); i++) 
-    //     {
-    //         if (frase.charAt(i) == antiga.charAt(j)) 
-    //         {
-    //             if (j == antiga.length() - 1)
-    //             {
-    //                 resp += nova;
-    //                 j = 0;
-    //                 aux = "";
-    //             } 
-    //             else 
-    //             {
-    //                 j++;
-    //                 aux += frase.charAt(i);
-    //             }
-    //         } 
-    //         else 
-    //         {
-    //             j = 0;
-    //             if (aux.length() > 0) 
-    //             {
-    //                 resp += aux+frase.charAt(i);
-    //                 aux = "";
-    //             }
-    //             else
-    //             {
-    //                 resp += frase.charAt(i);
-    //             }
-    //         }
-    //     }
-    //     return resp;
-    // }
-
-
     public static String substring(String entrada, int inicio, int fim) {
         String resp = "";
         for (int i = inicio; i < fim; i++) 

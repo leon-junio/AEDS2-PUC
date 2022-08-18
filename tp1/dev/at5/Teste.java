@@ -78,7 +78,6 @@ class Teste {
             if (entrada.charAt(i) == '(') {
                 for (int h = i + 1; h < entrada.length(); h++) {
                     if (entrada.charAt(h) == ')') {
-                        System.out.println("CT: " + conta);
                         if (entrada.charAt(i - 1) == 'd') {
                             aux = "1";
                             for (int r = 0; r < conta.length(); r++) {
@@ -87,16 +86,14 @@ class Teste {
                                         aux = "0";
                                         r = conta.length();
                                     }
-
                                 }
                             }
                             String help = "and(";
                             entrada = replace(entrada, help + conta + ")", aux);
-                            // entrada = entrada.replace(help + conta + ")", aux);
-                            System.out.println("Zerou 1 " + entrada);
                             i = 0;
                             conta = "";
                             h = entrada.length();
+
                         } else if (entrada.charAt(i - 1) == 't') {
                             for (int r = 0; r < conta.length(); r++) {
                                 if (conta.charAt(r) != ',') {
@@ -111,11 +108,10 @@ class Teste {
                             }
                             String help = "not(";
                             entrada = replace(entrada, help + conta + ")", aux);
-                            // entrada = entrada.replace(help + conta + ")", aux);
-                            System.out.println("Zerou 2 " + entrada);
                             i = 0;
                             conta = "";
                             h = entrada.length();
+                            
                         } else if (entrada.charAt(i - 1) == 'r') {
                             aux = "0";
                             for (int r = 0; r < conta.length(); r++) {
@@ -128,20 +124,16 @@ class Teste {
                             }
                             String help = "or(";
                             entrada = replace(entrada, help + conta + ")", aux);
-                            // entrada = entrada.replace(help + conta + ")", aux);
-                            System.out.println("Zerou 3 " + entrada);
                             i = 0;
                             conta = "";
                             h = entrada.length();
                         }
-
                     } else if (entrada.charAt(h) == '(') {
                         h = entrada.length();
                         conta = "";
                     } else {
-                        conta = conta + entrada.charAt(h);
+                        conta += entrada.charAt(h);
                     }
-
                 }
             }
             i++;
@@ -152,16 +144,18 @@ class Teste {
     public static void main(String args[]) {
         int n = 1, valores[];
         String entrada = "", saida = "";
-
         do {
             n = MyIO.readInt();
             if (isFim(n) == false) {
                 valores = new int[n];
+
                 for (int i = 0; i < n; i++) {
                     valores[i] = MyIO.readInt();
                 }
                 entrada = MyIO.readLine();
+
                 saida = CalculoBooleano(entrada, valores);
+
                 MyIO.println(saida);
             }
         } while (isFim(n) == false);
