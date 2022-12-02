@@ -787,6 +787,7 @@ class Lista {
 		}
 		return resp;
 	}
+	
 
 	/**
 	 * Remove um elemento da ultima posicao da lista.
@@ -881,21 +882,25 @@ public class Tp2Q5 {
 	}
 
 	public static void main(String[] args) {
-		ArrayList<String> entradas = new ArrayList<>();
+		ArrayList<Jogos> entradas = new ArrayList<>();
 		ArrayList<String> removes = new ArrayList<>();
 		String verificacoes[];
 		Lista listaFilmes;
 		int n = 0, pos = 0, count = 0;
 		String entrada = "", comando, aux = "";
 		MyIO.setCharset("UTF-8");
+		
 		do {
 			entrada = MyIO.readLine();
 			if (!isFim(entrada)) {
 				entradas.add(entrada);
 			}
 		} while (!isFim(entrada));
+			
+		
 		n = MyIO.readInt();
 		verificacoes = new String[n];
+		
 		// salvando comandos de verificação para serem executados
 		for (int i = 0; i < n; i++) {
 			verificacoes[i] = entrada = MyIO.readLine();
@@ -906,6 +911,7 @@ public class Tp2Q5 {
 
 		// criação dos objetos de filme/leitura/impressao
 		listaFilmes = new Lista(entradas.size() + count);
+		
 		for (String ent : entradas) {
 			Filme filme = new Filme(ent);
 			listaFilmes.inserirFim(filme);
@@ -916,6 +922,7 @@ public class Tp2Q5 {
 			comando = verificacoes[i];
 			//System.out.println(comando);
 			if (Ferramentas.myContains(comando, "II")) {
+				comando.substring(0,comando.length());
 				listaFilmes.inserirInicio(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
 			} else if (Ferramentas.myContains(comando, "IF")) {
 				listaFilmes.inserirFim(new Filme(Ferramentas.mySubstring(comando, 3, comando.length())));
@@ -945,5 +952,4 @@ public class Tp2Q5 {
 		}
 		listaFilmes.imprimir();
 	}
-
 }

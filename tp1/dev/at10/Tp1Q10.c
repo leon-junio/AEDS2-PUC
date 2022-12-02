@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+// Função recursiva usada para acessar posições de um arquivo de texto contendo n doubles escritos de forma sequencial.
+// Após, abrir os mesmos serão impressos de trás para frente usando a estrategia de pilha da função recursiva,
+// para acessar as posições do arquivo e imprimir os doubles e utilizado o ftell() para retornar o tamanho do arquivo
+// uso a variavel count para conter os dados da posição do pointer do arquivo, com isso é possivel retornar os resultados
+// de trás para frente
+int exibir(FILE *arq, int count)
+{
+	int sk = 0;
+	double buffer;
+	fseek(arq, 0L, SEEK_END);
+	int sz = ftell(arq)-2;
+	rewind(arq);
+	if (count < sz)
+	{
+		fseek(arq, count, 0);
+		fscanf(arq, "%lf", &buffer);
+		count = exibir(arq, ftell(arq));
+		printf("%g\n", buffer);
+	}
+	if (count >= sz)
+	{
+		return count;
+	}
+	return 0;
+}
+
+//Função simples para verificar se um número é um double ou int, baseada no conceito de truncar um valor e testar com o valor original
+bool isInteger(double val)
+{
+	int truncated = (int)val;
+	return (val == truncated);
+}
+
+int main()
+{
+	int totalNum = 0, i = 0;
+	//salvando arquivos sequencialmente
+	FILE *file = fopen("temp.txt", "w");
+	double num = 0;
+	scanf("%d", &totalNum);
+	while (i < totalNum)
+	{
+		scanf("%lf", &num);
+		if (isInteger(num))
+		{
+			fprintf(file, "%d\n", (int)num);
+		}
+		else
+		{
+			fprintf(file, "%g\n", num);
+		}
+		i++;
+	}
+	fclose(file);
+	FILE *arq = fopen("temp.txt", "r");
+	exibir(arq, 0);
+	return 0;
+}
